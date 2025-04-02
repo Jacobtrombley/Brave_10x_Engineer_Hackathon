@@ -22,6 +22,44 @@ The recommendation system uses a two-stage pipeline:
 
 For more details, see [OVERVIEW.md](OVERVIEW.md).
 
+## 🤖 AI Usage and Technical Decisions
+
+### AI Models Integration
+
+- **Embedding Generation**: We utilize transformer-based models to generate dense vector representations of job descriptions and candidate profiles, capturing semantic meaning beyond keyword matching.
+  
+- **Matching Algorithm**: Our two-stage approach balances computational efficiency with matching quality:
+  - First stage uses FAISS for approximate nearest neighbor search, enabling scalable retrieval
+  - Second stage employs a fine-tuned ranking model that considers contextual factors beyond text similarity
+
+- **Conversational Assistants**: Both interfaces feature AI chatbots that:
+  - Help job seekers identify suitable roles based on their skills and preferences
+  - Assist employers in understanding candidate qualifications and matching rationales
+  - Provide personalized recommendations using natural language interactions
+
+### Technical Implementation Decisions
+
+1. **Frontend Architecture**:
+   - Used a component-based approach with HTML/CSS/JavaScript for lightweight, accessible interfaces
+   - Implemented a shared design system between job seeker and employer UIs for consistency
+   - Prioritized responsive design for mobile and desktop compatibility
+
+2. **Data Pipeline**:
+   - Created synthetic data generation rather than using real data to avoid privacy concerns
+   - Implemented vectorization of skills, experience, and preferences for multi-dimensional matching
+   - Designed a scalable architecture that can handle growing numbers of candidates and positions
+
+3. **UI/UX Considerations**:
+   - Focused on intuitive dashboard layouts with clear visual hierarchies
+   - Added detailed candidate cards with skill tags and match explanations
+   - Implemented chat-based interfaces for natural interaction with the recommendation system
+   - Used modern, clean design with accessibility considerations
+
+4. **Performance Optimizations**:
+   - Employed vector quantization for efficient similarity search
+   - Added caching of common search results
+   - Implemented background processing for computationally intensive matching tasks
+
 ## 🛠️ Components
 
 ### Data Pipeline
@@ -85,6 +123,16 @@ python main.py --step rank
 # Evaluate system performance
 python main.py --step evaluate
 ```
+
+To run just the UI server:
+
+```bash
+python start_ui_server.py
+```
+
+Then visit:
+- Job Seeker UI: http://localhost:8080/job_seeker/
+- Employer UI: http://localhost:8080/employer/
 
 ## 📝 Documentation
 
