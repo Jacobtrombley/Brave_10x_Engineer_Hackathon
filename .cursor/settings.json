@@ -1,0 +1,40 @@
+{
+  "projectName": "Brave 10x Engineer Hackathon - Job Matching System",
+  "description": "Global configuration for Cursor AI behavior across the project",
+  "defaultAiModel": "claude-3-sonnet-20240229",
+  "globalRules": {
+    "ai": {
+      "guidelines": [
+        "Follow consistent coding style throughout the project",
+        "Write descriptive comments for complex logic",
+        "Use type hints in Python code where appropriate",
+        "Include error handling for all external service calls",
+        "Keep functions focused on a single responsibility",
+        "Maintain clear separation of concerns between components"
+      ]
+    },
+    "codeCompletion": {
+      "enabled": true,
+      "model": "claude-3-sonnet-20240229",
+      "includeCodeContexts": true
+    },
+    "contextSize": {
+      "maxLines": 100,
+      "useAdaptiveContext": true
+    }
+  },
+  "documentation": {
+    "generateDocstrings": true,
+    "docstringFormat": "google",
+    "includeExamples": true
+  },
+  "linting": {
+    "enableSuggestions": true,
+    "autoFixOnSave": false
+  },
+  "securityChecks": {
+    "enabled": true,
+    "checkDependencies": true,
+    "checkSecrets": true
+  }
+} 

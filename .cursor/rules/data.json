@@ -1,0 +1,46 @@
+{
+  "name": "Data Pipeline Rules",
+  "description": "Configuration rules for AI behavior when working with data generation and processing",
+  "include": ["data/**/*.py"],
+  "rules": [
+    {
+      "description": "Data generation guidelines",
+      "pattern": "data/generate_data.py",
+      "ai": {
+        "allow": ["suggest", "edit", "refactor"],
+        "guidelines": [
+          "Ensure realistic and diverse synthetic data",
+          "Include edge cases in generated data",
+          "Document data generation parameters",
+          "Maintain consistent data schemas"
+        ]
+      }
+    },
+    {
+      "description": "Data preprocessing guidelines",
+      "pattern": "data/preprocess.py",
+      "ai": {
+        "allow": ["suggest", "edit", "refactor"],
+        "guidelines": [
+          "Optimize data transformation pipelines",
+          "Handle missing or malformed data gracefully",
+          "Document preprocessing steps clearly",
+          "Consider memory efficiency for large datasets"
+        ]
+      }
+    },
+    {
+      "description": "Data utilities guidelines",
+      "pattern": "data/utils/**/*.py",
+      "ai": {
+        "allow": ["suggest", "edit", "complete"],
+        "guidelines": [
+          "Create reusable utility functions",
+          "Add proper error handling",
+          "Include type hints for better code understanding",
+          "Document function parameters and return values"
+        ]
+      }
+    }
+  ]
+} 

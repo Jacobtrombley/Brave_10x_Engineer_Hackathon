@@ -1,0 +1,46 @@
+{
+  "name": "UI Components Rules",
+  "description": "Configuration rules for AI behavior when working with UI components",
+  "include": ["ui/**/*.html", "ui/**/*.css", "ui/**/*.js"],
+  "rules": [
+    {
+      "description": "Ensure consistent styling across components",
+      "pattern": "ui/styles.css",
+      "ai": {
+        "allow": ["suggest", "edit", "refactor"],
+        "guidelines": [
+          "Maintain the Shadcn design system principles",
+          "Use CSS variables for theming",
+          "Follow naming conventions for classes",
+          "Ensure responsive design"
+        ]
+      }
+    },
+    {
+      "description": "UI component guidelines",
+      "pattern": "ui/**/*.html",
+      "ai": {
+        "allow": ["suggest", "edit", "complete"],
+        "guidelines": [
+          "Use semantic HTML elements",
+          "Follow accessibility best practices",
+          "Maintain consistent component structure",
+          "Use class names that follow the project naming convention"
+        ]
+      }
+    },
+    {
+      "description": "JavaScript behavior rules",
+      "pattern": "ui/**/*.js",
+      "ai": {
+        "allow": ["suggest", "edit", "complete", "refactor"],
+        "guidelines": [
+          "Use modern JavaScript features",
+          "Keep functions small and focused",
+          "Separate UI logic from business logic",
+          "Provide clear error handling"
+        ]
+      }
+    }
+  ]
+} 
