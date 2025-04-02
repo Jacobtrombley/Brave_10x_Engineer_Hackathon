@@ -96,7 +96,7 @@ def generate_job_seeker():
         "education": {
             "degree": random.choice(EDUCATION_LEVELS),
             "field": fake.job(),
-            "institution": fake.university()
+            "institution": fake.company() + " University"
         },
         "preferred_job_titles": random.sample(JOB_TITLES, random.randint(1, 3)),
         "preferred_locations": random.sample(LOCATIONS, random.randint(1, 3)),

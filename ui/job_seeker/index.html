@@ -3,433 +3,944 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Seekers Dashboard | Brave Talent Match</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Job Seeker Dashboard | AI-Powered Job Matching</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <script defer src="https://unpkg.com/lucide@latest"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      height: 100vh;
+    }
+    
+    .sidebar {
+      background-color: var(--background);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+    
+    .page-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      height: calc(100vh - 80px);
+      overflow: hidden;
+    }
+    
+    .ai-assistant-panel {
+      grid-column: 1;
+      background-color: var(--background);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    
+    .ai-assistant-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      max-height: calc(100vh - 140px);
+    }
+    
+    .ai-assistant-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .ai-assistant-header h2 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .ai-assistant-icon {
+      background-color: var(--primary);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .ai-assistant-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    
+    .ai-assistant-input {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+    
+    .ai-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      outline: none;
+      font-size: 14px;
+    }
+    
+    .side-panel {
+      grid-column: 2;
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .app-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .app-card {
+      background-color: var(--background);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .app-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .app-card-title {
+      font-weight: 600;
+      margin: 0;
+      color: var(--foreground);
+    }
+    
+    .app-card-count {
+      background-color: var(--primary);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .chat-message-container {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-message {
+      padding: 10px 14px;
+      border-radius: 18px;
+      max-width: 80%;
+      margin-bottom: 4px;
+    }
+    
+    .user-message-container {
+      align-items: flex-end;
+    }
+    
+    .bot-message-container {
+      align-items: flex-start;
+    }
+    
+    .user-message {
+      background-color: var(--primary);
+      color: white;
+      border-top-right-radius: 4px;
+    }
+    
+    .bot-message {
+      background-color: var(--secondary-light);
+      color: var(--foreground);
+      border-top-left-radius: 4px;
+    }
+    
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .quick-action {
+      padding: 6px 14px;
+      background-color: var(--background-light);
+      border-radius: 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+    }
+    
+    .quick-action:hover {
+      background-color: var(--secondary-light);
+    }
+  </style>
 </head>
-<body class="bg-background text-foreground" x-data="{ activeSidebar: 'dashboard' }">
-  <div class="grid grid-cols-[280px_1fr]">
+<body>
+  <div class="dashboard-container">
     <!-- Sidebar -->
-    <aside class="bg-card h-screen border-r border-border flex flex-col">
-      <div class="p-6">
-        <h1 class="text-2xl font-bold text-primary">Brave Talent Match</h1>
+    <div class="sidebar">
+      <h2 style="margin-bottom: 20px; color: var(--primary);">JobMatch AI</h2>
+      
+      <div style="margin-bottom: 24px;">
+        <div class="avatar" style="margin-bottom: 12px; width: 60px; height: 60px;">JS</div>
+        <h3 style="margin-bottom: 4px;">Jason Smith</h3>
+        <p style="color: var(--foreground-muted); font-size: 14px;">Software Engineer</p>
       </div>
       
-      <nav class="flex-1 px-4 space-y-1">
-        <a @click.prevent="activeSidebar = 'dashboard'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
-          Dashboard
-        </a>
-        <a @click.prevent="activeSidebar = 'matches'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'matches' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="check-circle" class="w-5 h-5 mr-3"></i>
-          Job Matches
-        </a>
-        <a @click.prevent="activeSidebar = 'applications'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'applications' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="send" class="w-5 h-5 mr-3"></i>
-          Applications
-        </a>
-        <a @click.prevent="activeSidebar = 'profile'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'profile' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="user" class="w-5 h-5 mr-3"></i>
-          Profile
-        </a>
-        <a @click.prevent="activeSidebar = 'skills'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'skills' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="code" class="w-5 h-5 mr-3"></i>
-          Skills
-        </a>
+      <nav style="margin-bottom: 24px;">
+        <div style="font-weight: 500; color: var(--foreground-muted); margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Navigation</div>
+        <ul style="list-style: none; padding: 0;">
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-dashboard" class="nav-item active" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--primary); background-color: var(--primary-light); font-weight: 500;">Dashboard</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-matches" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Job Matches</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-saved" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Saved Jobs</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-in-progress" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Applications In Progress</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-submitted" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Submitted Applications</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-interviews" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Interviews</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-offers" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Job Offers</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-profile" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Profile</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" id="nav-settings" class="nav-item" style="display: block; padding: 8px 12px; border-radius: 6px; color: var(--foreground-muted);">Settings</a></li>
+        </ul>
       </nav>
       
-      <div class="p-4 border-t border-border">
-        <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <i data-lucide="user" class="w-5 h-5"></i>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm font-medium">Alex Johnson</p>
-            <p class="text-xs text-muted-foreground">Software Engineer</p>
-          </div>
+      <div>
+        <div style="font-weight: 500; color: var(--foreground-muted); margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Skills</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">JavaScript</span>
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">React</span>
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">Node.js</span>
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">Python</span>
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">AWS</span>
+          <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background-light); font-size: 12px;">Docker</span>
         </div>
       </div>
-    </aside>
+    </div>
     
     <!-- Main Content -->
-    <main class="h-screen overflow-auto">
-      <!-- Header -->
-      <header class="bg-card border-b border-border p-4 flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <button class="text-muted-foreground hover:text-foreground">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-          </button>
-          <button class="text-muted-foreground hover:text-foreground">
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Welcome back, Jason</h1>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <button class="btn-secondary">
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">+</span>
+              <span>Update Profile</span>
+            </span>
           </button>
         </div>
-        <div class="relative">
-          <input type="text" placeholder="Search for jobs..." class="input w-80 pl-10 py-2 rounded-full bg-background text-sm text-foreground border border-border">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-muted-foreground"></i>
-        </div>
-      </header>
-      
-      <!-- Content -->
-      <div class="p-6">
-        <!-- Dashboard Content -->
-        <div x-show="activeSidebar === 'dashboard'">
-          <h2 class="text-2xl font-bold mb-6">Welcome back, Alex!</h2>
+      </div>
+
+      <div class="content-grid">
+        <!-- AI Assistant Panel -->
+        <div class="ai-assistant-panel">
+          <h2 style="margin-bottom: 16px;">Your AI Career Assistant</h2>
           
-          <div class="grid grid-cols-3 gap-6 mb-8">
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Match Score</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="bar-chart" class="w-6 h-6"></i>
-                </div>
-              </div>
-              <p class="text-3xl font-bold">92%</p>
-              <p class="text-sm text-muted-foreground">Your profile matches jobs well</p>
+          <div class="ai-assistant-container">
+            <div class="ai-assistant-header">
+              <div class="ai-assistant-icon">AI</div>
+              <h2>JobMatch Assistant</h2>
             </div>
             
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Job Matches</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="briefcase" class="w-6 h-6"></i>
+            <div class="ai-assistant-body" id="ai-assistant-messages">
+              <div class="chat-message-container bot-message-container">
+                <div class="chat-message bot-message">
+                  <div class="message-content">
+                    Hi Jason! I'm your AI career assistant. I can help you find the best job matches, optimize your profile, and prep for interviews. What would you like to know today?
+                  </div>
                 </div>
               </div>
-              <p class="text-3xl font-bold">28</p>
-              <p class="text-sm text-muted-foreground">New matches this week</p>
             </div>
             
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Applications</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="send" class="w-6 h-6"></i>
-                </div>
-              </div>
-              <p class="text-3xl font-bold">5</p>
-              <p class="text-sm text-muted-foreground">Pending applications</p>
+            <div class="ai-assistant-input">
+              <input type="text" class="ai-input" id="ai-assistant-input" placeholder="Ask me about job matches, skills to learn, or salary info...">
+              <button class="btn-primary" id="ai-assistant-send" style="border-radius: 24px; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
             </div>
           </div>
           
-          <div class="bg-card p-6 rounded-lg border border-border mb-8">
-            <h3 class="text-lg font-medium mb-4">Skill Recommendations</h3>
-            <p class="mb-4 text-sm text-muted-foreground">Add these skills to improve your match rate:</p>
-            
-            <div class="grid grid-cols-3 gap-4">
-              <div class="flex items-center p-3 bg-accent rounded-md">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                  <i data-lucide="code" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <p class="font-medium">Docker</p>
-                  <p class="text-xs text-muted-foreground">In demand for 70% of matched jobs</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center p-3 bg-accent rounded-md">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                  <i data-lucide="code" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <p class="font-medium">Kubernetes</p>
-                  <p class="text-xs text-muted-foreground">In demand for 65% of matched jobs</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center p-3 bg-accent rounded-md">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                  <i data-lucide="code" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <p class="font-medium">TypeScript</p>
-                  <p class="text-xs text-muted-foreground">In demand for 60% of matched jobs</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-card p-6 rounded-lg border border-border">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-medium">Top Job Matches</h3>
-              <a href="#" @click.prevent="activeSidebar = 'matches'" class="text-sm text-primary">View all</a>
-            </div>
-            
-            <div class="space-y-4">
-              <div class="border border-border p-4 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                <div class="flex items-center justify-between">
-                  <h4 class="font-medium">Senior Software Engineer</h4>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
-                </div>
-                <p class="text-sm text-muted-foreground mb-2">TechCorp Inc. - San Francisco, CA</p>
-                <div class="flex items-center text-sm text-muted-foreground">
-                  <span class="flex items-center mr-4"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 5-7 years</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $120k - $150k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Remote</span>
-                </div>
-              </div>
-              
-              <div class="border border-border p-4 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                <div class="flex items-center justify-between">
-                  <h4 class="font-medium">Frontend Developer</h4>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95% Match</span>
-                </div>
-                <p class="text-sm text-muted-foreground mb-2">WebSolutions LLC - New York, NY</p>
-                <div class="flex items-center text-sm text-muted-foreground">
-                  <span class="flex items-center mr-4"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 3-5 years</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $90k - $120k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Hybrid</span>
-                </div>
-              </div>
-              
-              <div class="border border-border p-4 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                <div class="flex items-center justify-between">
-                  <h4 class="font-medium">Full Stack Engineer</h4>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92% Match</span>
-                </div>
-                <p class="text-sm text-muted-foreground mb-2">InnovateTech - Austin, TX</p>
-                <div class="flex items-center text-sm text-muted-foreground">
-                  <span class="flex items-center mr-4"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 4-6 years</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $100k - $130k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> On-site</span>
-                </div>
-              </div>
-            </div>
+          <div class="quick-actions">
+            <div class="quick-action">Show my top job matches</div>
+            <div class="quick-action">What skills should I learn?</div>
+            <div class="quick-action">Show recent job openings</div>
+            <div class="quick-action">What salary can I expect?</div>
+            <div class="quick-action">Help me with my resume</div>
+            <div class="quick-action">Prepare for interviews</div>
           </div>
         </div>
         
-        <!-- Job Matches Content -->
-        <div x-show="activeSidebar === 'matches'">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold">Your Job Matches</h2>
-            <div class="flex space-x-2">
-              <button class="btn-secondary">
-                <i data-lucide="filter" class="w-4 h-4 mr-2"></i>
-                Filter
-              </button>
-              <button class="btn-secondary">
-                <i data-lucide="sort" class="w-4 h-4 mr-2"></i>
-                Sort
-              </button>
+        <!-- Side Panel Content Sections -->
+        <div class="side-panel">
+          <!-- Dashboard Section -->
+          <div id="section-dashboard" class="content-section">
+            <h3 style="margin-bottom: 16px;">Job Activity</h3>
+            
+            <div class="app-cards">
+              <div class="app-card">
+                <div class="app-card-header">
+                  <h3 class="app-card-title">Applications</h3>
+                  <div class="app-card-count">12</div>
+                </div>
+                <p style="color: var(--foreground-muted); font-size: 14px;">3 in progress, 5 submitted, 4 viewed</p>
+              </div>
+              
+              <div class="app-card">
+                <div class="app-card-header">
+                  <h3 class="app-card-title">Interviews</h3>
+                  <div class="app-card-count">3</div>
+                </div>
+                <p style="color: var(--foreground-muted); font-size: 14px;">1 scheduled, 2 completed</p>
+              </div>
+            </div>
+            
+            <h3 style="margin-bottom: 16px;">Top Job Matches</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Senior Frontend Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">98%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">TechCorp Inc.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted);">
+                  <span>San Francisco, CA</span>
+                  <span>$120k - $150k</span>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Full Stack Engineer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">93%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">InnoSoft Solutions</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted);">
+                  <span>Remote</span>
+                  <span>$110k - $140k</span>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Senior React Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">90%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">GrowthStart Labs</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted);">
+                  <span>New York, NY</span>
+                  <span>$130k - $160k</span>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-6">
-            <!-- Job Card 1 -->
-            <div class="border border-border rounded-lg overflow-hidden">
-              <div class="bg-primary/5 p-4 border-b border-border">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <i data-lucide="briefcase" class="w-6 h-6"></i>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="font-medium">Senior Software Engineer</h3>
-                      <p class="text-sm text-muted-foreground">TechCorp Inc.</p>
-                    </div>
-                  </div>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
-                </div>
-              </div>
-              
-              <div class="p-4">
-                <div class="flex items-center text-sm text-muted-foreground mb-4">
-                  <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> San Francisco, CA</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $120k - $150k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Remote</span>
-                </div>
-                
-                <h4 class="font-medium mb-2">Required Skills</h4>
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="badge">JavaScript</span>
-                  <span class="badge">React</span>
-                  <span class="badge">Node.js</span>
-                  <span class="badge">AWS</span>
-                  <span class="badge">REST APIs</span>
-                </div>
-                
-                <h4 class="font-medium mb-2">Job Description</h4>
-                <p class="text-sm text-muted-foreground mb-4">We're looking for a Senior Software Engineer to join our team and help build scalable web applications. You'll work on challenging problems and collaborate with a talented team...</p>
-                
-                <div class="flex space-x-2">
-                  <button class="btn-primary">Apply Now</button>
-                  <button class="btn-secondary">Save Job</button>
-                </div>
+          <!-- Job Matches Section -->
+          <div id="section-matches" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Your Top Job Matches</h3>
+            
+            <div class="job-filter" style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--background-light);">
+              <div style="margin-bottom: 8px; font-weight: 500;">Filter Matches</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option>Location: Any</option>
+                  <option>Remote Only</option>
+                  <option>San Francisco, CA</option>
+                  <option>New York, NY</option>
+                  <option>Seattle, WA</option>
+                </select>
+                <select style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option>Experience: Any</option>
+                  <option>Entry Level</option>
+                  <option>Mid Level</option>
+                  <option>Senior</option>
+                </select>
+                <select style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option>Salary: Any</option>
+                  <option>$80k+</option>
+                  <option>$100k+</option>
+                  <option>$120k+</option>
+                  <option>$150k+</option>
+                </select>
               </div>
             </div>
             
-            <!-- Job Card 2 -->
-            <div class="border border-border rounded-lg overflow-hidden">
-              <div class="bg-primary/5 p-4 border-b border-border">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <i data-lucide="briefcase" class="w-6 h-6"></i>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="font-medium">Frontend Developer</h3>
-                      <p class="text-sm text-muted-foreground">WebSolutions LLC</p>
-                    </div>
-                  </div>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95% Match</span>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Senior Frontend Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">98%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">TechCorp Inc.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">JavaScript</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">React</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">TypeScript</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>San Francisco, CA</span>
+                  <span>$120k - $150k</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Apply Now</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Save</button>
                 </div>
               </div>
               
-              <div class="p-4">
-                <div class="flex items-center text-sm text-muted-foreground mb-4">
-                  <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> New York, NY</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $90k - $120k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Hybrid</span>
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Full Stack Engineer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">93%</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Required Skills</h4>
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="badge">HTML/CSS</span>
-                  <span class="badge">JavaScript</span>
-                  <span class="badge">React</span>
-                  <span class="badge">Redux</span>
-                  <span class="badge">Responsive Design</span>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">InnoSoft Solutions</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">JavaScript</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Node.js</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">MongoDB</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Job Description</h4>
-                <p class="text-sm text-muted-foreground mb-4">WebSolutions is seeking a talented Frontend Developer to create beautiful, responsive web applications. You'll work closely with designers and backend developers to implement...</p>
-                
-                <div class="flex space-x-2">
-                  <button class="btn-primary">Apply Now</button>
-                  <button class="btn-secondary">Save Job</button>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Remote</span>
+                  <span>$110k - $140k</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Apply Now</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Save</button>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Senior React Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">90%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">GrowthStart Labs</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">React</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Redux</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">GraphQL</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>New York, NY</span>
+                  <span>$130k - $160k</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Apply Now</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Save</button>
                 </div>
               </div>
             </div>
+          </div>
+          
+          <!-- Saved Jobs Section -->
+          <div id="section-saved" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Your Saved Jobs</h3>
             
-            <!-- Job Card 3 -->
-            <div class="border border-border rounded-lg overflow-hidden">
-              <div class="bg-primary/5 p-4 border-b border-border">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <i data-lucide="briefcase" class="w-6 h-6"></i>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="font-medium">Full Stack Engineer</h3>
-                      <p class="text-sm text-muted-foreground">InnovateTech</p>
-                    </div>
-                  </div>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92% Match</span>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Backend Engineer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">85%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">CloudNet Systems</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Python</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Django</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">PostgreSQL</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Seattle, WA</span>
+                  <span>$115k - $135k</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Apply Now</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Remove</button>
                 </div>
               </div>
               
-              <div class="p-4">
-                <div class="flex items-center text-sm text-muted-foreground mb-4">
-                  <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Austin, TX</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $100k - $130k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> On-site</span>
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">DevOps Engineer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">82%</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Required Skills</h4>
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="badge">JavaScript</span>
-                  <span class="badge">React</span>
-                  <span class="badge">Node.js</span>
-                  <span class="badge">MongoDB</span>
-                  <span class="badge">Express</span>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">TechInfra Ltd.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Docker</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Kubernetes</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">AWS</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Job Description</h4>
-                <p class="text-sm text-muted-foreground mb-4">InnovateTech is looking for a Full Stack Engineer to develop end-to-end web applications. You'll be responsible for both frontend and backend development, working with...</p>
-                
-                <div class="flex space-x-2">
-                  <button class="btn-primary">Apply Now</button>
-                  <button class="btn-secondary">Save Job</button>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Remote</span>
+                  <span>$125k - $145k</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Apply Now</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Remove</button>
                 </div>
               </div>
             </div>
+          </div>
+          
+          <!-- Applications In Progress Section -->
+          <div id="section-in-progress" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Applications In Progress</h3>
             
-            <!-- Job Card 4 -->
-            <div class="border border-border rounded-lg overflow-hidden">
-              <div class="bg-primary/5 p-4 border-b border-border">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <i data-lucide="briefcase" class="w-6 h-6"></i>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="font-medium">DevOps Engineer</h3>
-                      <p class="text-sm text-muted-foreground">CloudSystems Inc.</p>
-                    </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">UX/UI Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">88%</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">DesignHub Co.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>San Francisco, CA</span>
+                  <span>Started on Apr 1, 2023</span>
+                </div>
+                <div style="margin-bottom: 12px;">
+                  <div style="font-weight: 500; margin-bottom: 6px; font-size: 14px;">Application Progress</div>
+                  <div style="width: 100%; height: 8px; background-color: var(--background); border-radius: 4px; overflow: hidden;">
+                    <div style="width: 60%; height: 100%; background-color: var(--primary);"></div>
                   </div>
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">90% Match</span>
+                  <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: var(--foreground-muted);">
+                    <span>Basic Info</span>
+                    <span>Resume</span>
+                    <span>Work History</span>
+                    <span>Skills Assessment</span>
+                    <span>Submit</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Continue Application</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Delete</button>
                 </div>
               </div>
               
-              <div class="p-4">
-                <div class="flex items-center text-sm text-muted-foreground mb-4">
-                  <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Seattle, WA</span>
-                  <span class="flex items-center mr-4"><i data-lucide="dollar-sign" class="w-4 h-4 mr-1"></i> $110k - $140k</span>
-                  <span class="flex items-center"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Remote</span>
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Mobile Developer</h4>
+                  <span style="background-color: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">85%</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Required Skills</h4>
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="badge">AWS</span>
-                  <span class="badge">Docker</span>
-                  <span class="badge">Kubernetes</span>
-                  <span class="badge">CI/CD</span>
-                  <span class="badge">Terraform</span>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">AppWorks Inc.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>New York, NY</span>
+                  <span>Started on Mar 30, 2023</span>
                 </div>
-                
-                <h4 class="font-medium mb-2">Job Description</h4>
-                <p class="text-sm text-muted-foreground mb-4">CloudSystems is hiring a DevOps Engineer to help automate our infrastructure and deployment processes. You'll be responsible for building and maintaining our CI/CD pipelines...</p>
-                
-                <div class="flex space-x-2">
-                  <button class="btn-primary">Apply Now</button>
-                  <button class="btn-secondary">Save Job</button>
+                <div style="margin-bottom: 12px;">
+                  <div style="font-weight: 500; margin-bottom: 6px; font-size: 14px;">Application Progress</div>
+                  <div style="width: 100%; height: 8px; background-color: var(--background); border-radius: 4px; overflow: hidden;">
+                    <div style="width: 80%; height: 100%; background-color: var(--primary);"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: var(--foreground-muted);">
+                    <span>Basic Info</span>
+                    <span>Resume</span>
+                    <span>Work History</span>
+                    <span>Skills Assessment</span>
+                    <span>Submit</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Continue Application</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Submitted Applications Section -->
+          <div id="section-submitted" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Submitted Applications</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Software Engineer</h4>
+                  <span style="background-color: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">In Review</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">DataSys Corp.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Boston, MA</span>
+                  <span>Submitted on Mar 25, 2023</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Java</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Spring Boot</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">MySQL</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--background); color: var(--foreground); border: 1px solid var(--border); font-size: 14px; cursor: pointer;">View Application</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Follow Up</button>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Frontend Engineer</h4>
+                  <span style="background-color: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Viewed</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">WebTech Solutions</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Remote</span>
+                  <span>Submitted on Mar 20, 2023</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">JavaScript</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Vue.js</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">CSS</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--background); color: var(--foreground); border: 1px solid var(--border); font-size: 14px; cursor: pointer;">View Application</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Follow Up</button>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Cloud Engineer</h4>
+                  <span style="background-color: #6366f1; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Assessment</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">CloudOps Inc.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--foreground-muted); margin-bottom: 12px;">
+                  <span>Chicago, IL</span>
+                  <span>Submitted on Mar 18, 2023</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">AWS</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Terraform</span>
+                  <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; background-color: var(--background); font-size: 12px;">Docker</span>
+                </div>
+                <div style="margin-top: 8px; padding: 10px; background-color: #f0f9ff; border-radius: 6px; font-size: 14px; color: #0369a1;">
+                  <div style="font-weight: 500; margin-bottom: 4px;">Technical Assessment Due</div>
+                  <div>Please complete the technical assessment by April 5, 2023.</div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Take Assessment</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">View Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Interviews Section -->
+          <div id="section-interviews" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Your Interviews</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Data Scientist</h4>
+                  <span style="background-color: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Scheduled</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">AI Research Labs</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: 14px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>April 5, 2023</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>2:00 PM - 3:00 PM</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>Video Interview</span>
+                  </div>
+                </div>
+                <div style="margin-top: 8px; padding: 10px; background-color: #f0f9ff; border-radius: 6px; font-size: 14px;">
+                  <div style="font-weight: 500; margin-bottom: 4px;">Interview Details</div>
+                  <div style="margin-bottom: 8px;">Technical interview with the Data Science team. Be prepared to discuss your experience with machine learning models and data analysis.</div>
+                  <div style="display: flex; align-items: center; gap: 6px; color: #0369a1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    <a href="#">Zoom Meeting Link</a>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Prepare for Interview</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Reschedule</button>
+                </div>
+              </div>
+              
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">DevOps Engineer</h4>
+                  <span style="background-color: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Completed</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">TechOps Inc.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: 14px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>March 30, 2023</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>11:00 AM - 12:00 PM</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>Phone Screen</span>
+                  </div>
+                </div>
+                <div style="margin-top: 8px; padding: 10px; background-color: #ecfdf5; border-radius: 6px; font-size: 14px;">
+                  <div style="font-weight: 500; margin-bottom: 4px; color: #047857;">Interview Feedback</div>
+                  <div>Great performance in the phone screen. The team was impressed with your infrastructure automation experience and invited you for the next round.</div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--background); color: var(--foreground); border: 1px solid var(--border); font-size: 14px; cursor: pointer;">View Details</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Send Thank You</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Job Offers Section -->
+          <div id="section-offers" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Your Job Offers</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 600;">Senior Software Engineer</h4>
+                  <span style="background-color: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Active Offer</span>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">GlobalTech Inc.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: 14px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Recruiting Manager: Sarah Wilson</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>Expires on: April 10, 2023</span>
+                  </div>
+                </div>
+                <div style="margin-bottom: 12px; padding: 12px; background-color: var(--background); border-radius: 6px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 500;">Compensation Package</span>
+                    <span style="font-weight: 600; color: var(--primary);">$140,000 / year</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Signing Bonus</span>
+                      <span>$15,000</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Annual Bonus Target</span>
+                      <span>15% of base salary</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Equity</span>
+                      <span>$50,000 (4-year vesting)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Vacation</span>
+                      <span>20 days / year</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Remote Work</span>
+                      <span>3 days per week</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Accept Offer</button>
+                  <button style="flex: 1; padding: 6px 12px; border-radius: 6px; background-color: var(--background); color: var(--foreground); border: 1px solid var(--border); font-size: 14px; cursor: pointer;">Negotiate</button>
+                  <button style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Decline</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
-  
-  <script>
-    // Initialize Lucide icons
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
-  </script>
-  
-  <!-- Chatbot Scripts -->
+
   <script src="../chatbot.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize the chatbot with job seeker suggestions
-      const jobSeekerBot = new Chatbot({
-        userType: 'job_seeker',
-        suggestions: [
-          'Show my top job matches',
-          'What are the latest job postings?',
-          'Skills I should develop',
-          'Salary information'
-        ],
-        userData: {
-          name: 'Alex Johnson',
-          title: 'Software Engineer',
-          skills: ['JavaScript', 'React', 'Node.js', 'MongoDB']
+      // Initialize the AI Assistant
+      const aiAssistantInput = document.getElementById('ai-assistant-input');
+      const aiAssistantSend = document.getElementById('ai-assistant-send');
+      const aiAssistantMessages = document.getElementById('ai-assistant-messages');
+      
+      // Navigation handling
+      const navItems = document.querySelectorAll('.nav-item');
+      const contentSections = document.querySelectorAll('.content-section');
+
+      // Add event listener for nav items
+      navItems.forEach(function(navItem) {
+        navItem.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove active class from all nav items
+          navItems.forEach(item => item.classList.remove('active'));
+          navItems.forEach(item => {
+            item.style.color = 'var(--foreground-muted)';
+            item.style.backgroundColor = 'transparent';
+            item.style.fontWeight = 'normal';
+          });
+          
+          // Add active class to clicked nav item
+          this.classList.add('active');
+          this.style.color = 'var(--primary)';
+          this.style.backgroundColor = 'var(--primary-light)';
+          this.style.fontWeight = '500';
+          
+          // Hide all content sections
+          contentSections.forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // Show the relevant content section
+          const sectionId = this.id.replace('nav-', '');
+          const sectionToShow = document.getElementById('section-' + sectionId);
+          if (sectionToShow) {
+            sectionToShow.style.display = 'block';
+          }
+        });
+      });
+      
+      // Add event listener for the send button
+      aiAssistantSend.addEventListener('click', function() {
+        sendMessage();
+      });
+      
+      // Add event listener for Enter key
+      aiAssistantInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          sendMessage();
         }
       });
+      
+      // Add event listeners for quick action buttons
+      document.querySelectorAll('.quick-action').forEach(function(element) {
+        element.addEventListener('click', function() {
+          const message = this.textContent.trim();
+          addUserMessage(message);
+          simulateResponse(message);
+        });
+      });
+      
+      function sendMessage() {
+        const message = aiAssistantInput.value.trim();
+        if (message) {
+          addUserMessage(message);
+          aiAssistantInput.value = '';
+          simulateResponse(message);
+        }
+      }
+      
+      function addUserMessage(message) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'chat-message-container user-message-container';
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'chat-message user-message';
+        
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+        contentElement.textContent = message;
+        
+        messageElement.appendChild(contentElement);
+        messageContainer.appendChild(messageElement);
+        aiAssistantMessages.appendChild(messageContainer);
+        
+        // Scroll to bottom
+        aiAssistantMessages.scrollTop = aiAssistantMessages.scrollHeight;
+      }
+      
+      function addBotMessage(message) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'chat-message-container bot-message-container';
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'chat-message bot-message';
+        
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+        contentElement.innerHTML = message;
+        
+        messageElement.appendChild(contentElement);
+        messageContainer.appendChild(messageElement);
+        aiAssistantMessages.appendChild(messageContainer);
+        
+        // Scroll to bottom
+        aiAssistantMessages.scrollTop = aiAssistantMessages.scrollHeight;
+      }
+      
+      function simulateResponse(message) {
+        // Add loading indicator
+        const loadingContainer = document.createElement('div');
+        loadingContainer.className = 'chat-message-container bot-message-container';
+        
+        const loadingElement = document.createElement('div');
+        loadingElement.className = 'chat-message bot-message';
+        
+        const loadingContent = document.createElement('div');
+        loadingContent.className = 'message-content';
+        loadingContent.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+        
+        loadingElement.appendChild(loadingContent);
+        loadingContainer.appendChild(loadingElement);
+        aiAssistantMessages.appendChild(loadingContainer);
+        
+        // Scroll to bottom
+        aiAssistantMessages.scrollTop = aiAssistantMessages.scrollHeight;
+        
+        // Initialize the real chatbot from the imported script
+        const chatbot = new Chatbot({
+          userType: 'job_seeker',
+          userData: {
+            name: 'Jason Smith',
+            role: 'Software Engineer',
+            skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'Docker']
+          }
+        });
+        
+        // Generate response after delay
+        setTimeout(() => {
+          // Remove loading indicator
+          aiAssistantMessages.removeChild(loadingContainer);
+          
+          // Generate response based on message
+          const response = chatbot.generateResponse(message);
+          addBotMessage(response.message);
+          
+          // If there's HTML content to display
+          if (response.html) {
+            addBotMessage(response.html);
+          }
+        }, Math.random() * 1000 + 500); // Random delay between 500-1500ms
+      }
     });
   </script>
 </body>
