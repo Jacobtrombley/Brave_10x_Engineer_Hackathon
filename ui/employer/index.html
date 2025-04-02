@@ -10,6 +10,257 @@
   <link rel="stylesheet" href="../styles.css">
   <script defer src="https://unpkg.com/lucide@latest"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="../chatbot.js"></script>
+  <style>
+    .ai-assistant-container {
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      height: calc(100vh - 210px);
+      margin-bottom: 1rem;
+    }
+    
+    .ai-assistant-header {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .ai-assistant-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+    }
+    
+    .ai-assistant-header h3 {
+      font-weight: 600;
+      margin: 0;
+      color: var(--primary);
+    }
+    
+    .ai-assistant-body {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    
+    .ai-assistant-footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .ai-assistant-input {
+      flex: 1;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 8px 16px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    
+    .ai-assistant-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+    }
+    
+    #ai-send-btn {
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    #ai-send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      background-color: var(--primary-hover, var(--primary));
+    }
+    
+    #ai-send-btn:active {
+      transform: translateY(0);
+    }
+    
+    #ai-send-btn i {
+      transition: transform 0.2s ease;
+    }
+    
+    #ai-send-btn:hover i {
+      transform: rotate(45deg) scale(1.1);
+    }
+    
+    .ai-quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .ai-quick-action {
+      background-color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .ai-quick-action:hover {
+      background-color: var(--muted);
+    }
+    
+    .chat-message {
+      margin-bottom: 16px;
+      max-width: 85%;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+    }
+    
+    .chat-message-user {
+      align-self: flex-end;
+      margin-left: auto;
+      background-color: var(--primary);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .chat-message-ai {
+      align-self: flex-start;
+      background-color: var(--accent);
+      padding: 12px 16px;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Enhanced chat content styling */
+    .chat-message-ai b {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .chat-message-ai br {
+      content: "";
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    /* Candidate card styling */
+    .candidate-card {
+      background-color: var(--background);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+    }
+    
+    .candidate-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    
+    .candidate-name {
+      font-weight: 600;
+      color: var(--foreground);
+    }
+    
+    .candidate-match {
+      background-color: var(--primary-light, rgba(var(--primary-rgb), 0.1));
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    
+    .candidate-skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 8px 0;
+    }
+    
+    .candidate-skill {
+      background-color: var(--muted);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--muted-foreground);
+    }
+    
+    .candidate-section {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .candidate-section-title {
+      font-weight: 500;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--primary);
+    }
+    
+    .candidate-detail {
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+    
+    .candidate-reason {
+      background-color: rgba(var(--primary-rgb), 0.05);
+      border-left: 3px solid var(--primary);
+      padding: 8px 12px;
+      margin: 8px 0;
+      font-style: italic;
+      color: var(--foreground);
+    }
+    
+    .loading-dots {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+    }
+    
+    .loading-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--muted-foreground);
+      animation: loadingDots 1.4s infinite ease-in-out both;
+    }
+    
+    .loading-dots span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    
+    .loading-dots span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    
+    @keyframes loadingDots {
+      0%, 80%, 100% { 
+        transform: scale(0);
+      } 
+      40% { 
+        transform: scale(1.0);
+      }
+    }
+  </style>
 </head>
 <body class="bg-background text-foreground" x-data="{ activeSidebar: 'dashboard' }">
   <div class="grid grid-cols-[280px_1fr]">
@@ -21,38 +272,56 @@
       </div>
       
       <nav class="flex-1 px-4 space-y-1">
-        <a @click.prevent="activeSidebar = 'dashboard'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+        <a id="nav-dashboard" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item active"
            :class="activeSidebar === 'dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
           <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
           Dashboard
         </a>
-        <a @click.prevent="activeSidebar = 'jobs'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+        <a id="nav-jobs" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
            :class="activeSidebar === 'jobs' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
           <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i>
           Job Listings
         </a>
-        <a @click.prevent="activeSidebar = 'candidates'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+        <a id="nav-candidates" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
            :class="activeSidebar === 'candidates' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
           <i data-lucide="users" class="w-5 h-5 mr-3"></i>
-          Candidates
+          Top Candidates
         </a>
-        <a @click.prevent="activeSidebar = 'applications'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
-           :class="activeSidebar === 'applications' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="inbox" class="w-5 h-5 mr-3"></i>
-          Applications
+        <a id="nav-applicants" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
+           :class="activeSidebar === 'applicants' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="clipboard" class="w-5 h-5 mr-3"></i>
+          New Applicants
         </a>
-        <a @click.prevent="activeSidebar = 'analytics'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+        <a id="nav-screening" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
+           :class="activeSidebar === 'screening' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="check-square" class="w-5 h-5 mr-3"></i>
+          Initial Screening
+        </a>
+        <a id="nav-interviews" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
+           :class="activeSidebar === 'interviews' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
+          Interviews
+        </a>
+        <a id="nav-offers" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
+           :class="activeSidebar === 'offers' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="award" class="w-5 h-5 mr-3"></i>
+          Job Offers
+        </a>
+        <a id="nav-analytics" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
            :class="activeSidebar === 'analytics' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
           <i data-lucide="bar-chart" class="w-5 h-5 mr-3"></i>
           Analytics
         </a>
-        <a @click.prevent="activeSidebar = 'settings'" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+        <a id="nav-settings" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
            :class="activeSidebar === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
           <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
           Settings
@@ -93,356 +362,375 @@
       <!-- Content -->
       <div class="p-6">
         <!-- Dashboard Content -->
-        <div x-show="activeSidebar === 'dashboard'">
-          <h2 class="text-2xl font-bold mb-6">Employer Dashboard</h2>
+        <div id="section-dashboard" class="content-section">
+          <!-- AI Assistant at the top -->
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold mb-6">AI Recruiting Assistant</h2>
+            
+            <div class="ai-assistant-container">
+              <div class="ai-assistant-header">
+                <div class="ai-assistant-icon">
+                  <i data-lucide="bot" class="w-5 h-5"></i>
+                </div>
+                <h3>Talent Match Assistant</h3>
+              </div>
+              
+              <div class="ai-assistant-body flex flex-col" id="ai-chat-messages">
+                <div class="chat-message chat-message-ai">
+                  Hello! I'm your AI recruiting assistant. I can help you find top candidates, analyze applicant qualifications, optimize job postings, and provide hiring insights. How can I assist you today?
+                </div>
+                <!-- Messages will be added here -->
+              </div>
+              
+              <div class="ai-assistant-footer">
+                <input type="text" id="ai-message-input" class="ai-assistant-input" placeholder="Ask about candidates, skills, or job posting optimization...">
+                <button id="ai-send-btn" class="bg-primary text-white p-2 rounded-full w-10 h-10 flex items-center justify-center" onclick="sendChatMessage()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send paper-plane">
+                    <path d="m22 2-7 20-4-9-9-4Z"></path>
+                    <path d="M22 2 11 13"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="ai-quick-actions">
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Find top candidates for Senior Developer role</div>
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Analyze skill gaps in applicant pool</div>
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Optimize job posting for better matches</div>
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Show application statistics</div>
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Suggest interview questions</div>
+              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Compare candidate qualifications</div>
+            </div>
+          </div>
           
-          <div class="grid grid-cols-3 gap-6 mb-8">
+          <!-- Recruitment Workflow - Horizontal -->
+          <div class="mb-6">
             <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Active Jobs</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="briefcase" class="w-6 h-6"></i>
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium">Recruitment Pipeline</h3>
+                <span class="text-sm text-muted-foreground">Last updated: April 2, 2023</span>
+              </div>
+              
+              <div class="flex flex-row gap-4 overflow-x-auto pb-2">
+                <!-- Job Listings Stage -->
+                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('jobs')">
+                  <div class="flex justify-between mb-2">
+                    <h4 class="font-medium">Job Listings</h4>
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Open Positions</span>
+                      <span class="text-lg font-medium">12</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Applications</span>
+                      <span class="text-lg font-medium">87</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-muted-foreground">Avg. Match Score</span>
+                      <span class="text-lg font-medium">76%</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-border">
+                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
+                  </div>
+                </div>
+                
+                <!-- New Applicants Stage -->
+                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('applicants')">
+                  <div class="flex justify-between mb-2">
+                    <h4 class="font-medium">New Applicants</h4>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">42 New</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Total Applicants</span>
+                      <span class="text-lg font-medium">42</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">High Match</span>
+                      <span class="text-lg font-medium">18</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-muted-foreground">Need Review</span>
+                      <span class="text-lg font-medium">24</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-border">
+                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
+                  </div>
+                </div>
+                
+                <!-- Initial Screening Stage -->
+                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('screening')">
+                  <div class="flex justify-between mb-2">
+                    <h4 class="font-medium">Initial Screening</h4>
+                    <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">In Progress</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">In Screening</span>
+                      <span class="text-lg font-medium">15</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Scheduled</span>
+                      <span class="text-lg font-medium">8</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-muted-foreground">Completed</span>
+                      <span class="text-lg font-medium">7</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-border">
+                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
+                  </div>
+                </div>
+                
+                <!-- Interviews Stage -->
+                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('interviews')">
+                  <div class="flex justify-between mb-2">
+                    <h4 class="font-medium">Interviews</h4>
+                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Scheduled</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">This Week</span>
+                      <span class="text-lg font-medium">9</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Next Round</span>
+                      <span class="text-lg font-medium">6</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-muted-foreground">Feedback Pending</span>
+                      <span class="text-lg font-medium">3</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-border">
+                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
+                  </div>
+                </div>
+                
+                <!-- Job Offers Stage -->
+                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('offers')">
+                  <div class="flex justify-between mb-2">
+                    <h4 class="font-medium">Job Offers</h4>
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">2 Pending</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Sent</span>
+                      <span class="text-lg font-medium">2</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm text-muted-foreground">Accepted</span>
+                      <span class="text-lg font-medium">3</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-muted-foreground">Negotiation</span>
+                      <span class="text-lg font-medium">1</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 pt-3 border-t border-border">
+                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
+                  </div>
                 </div>
               </div>
-              <p class="text-3xl font-bold">12</p>
-              <p class="text-sm text-muted-foreground">3 posted this week</p>
             </div>
-            
+          </div>
+          
+          <!-- Progress Metrics and Top Candidates - Two Column Layout -->
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Progress Metrics -->
             <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Total Applications</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="file-text" class="w-6 h-6"></i>
-                </div>
-              </div>
-              <p class="text-3xl font-bold">247</p>
-              <p class="text-sm text-muted-foreground">34 new this week</p>
-            </div>
-            
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium">Top Matches</h3>
-                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <i data-lucide="check-circle" class="w-6 h-6"></i>
-                </div>
-              </div>
-              <p class="text-3xl font-bold">58</p>
-              <p class="text-sm text-muted-foreground">High match candidates</p>
-            </div>
-          </div>
-          
-          <div class="flex gap-6 mb-8">
-            <div class="bg-card p-6 rounded-lg border border-border flex-1">
-              <h3 class="text-lg font-medium mb-4">Job Match Analytics</h3>
-              <div class="h-64 bg-accent rounded-md flex items-center justify-center">
-                <p class="text-muted-foreground">Job match analytics chart placeholder</p>
-              </div>
-            </div>
-            
-            <div class="bg-card p-6 rounded-lg border border-border w-1/3">
-              <h3 class="text-lg font-medium mb-4">Top Skills in Demand</h3>
-              <div class="space-y-4">
-                <div class="flex items-center">
-                  <div class="w-full bg-accent rounded-full h-4 mr-2">
-                    <div class="bg-primary h-4 rounded-full" style="width: 85%"></div>
-                  </div>
-                  <span class="text-sm whitespace-nowrap">JavaScript (85%)</span>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-full bg-accent rounded-full h-4 mr-2">
-                    <div class="bg-primary h-4 rounded-full" style="width: 78%"></div>
-                  </div>
-                  <span class="text-sm whitespace-nowrap">React (78%)</span>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-full bg-accent rounded-full h-4 mr-2">
-                    <div class="bg-primary h-4 rounded-full" style="width: 72%"></div>
-                  </div>
-                  <span class="text-sm whitespace-nowrap">Node.js (72%)</span>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-full bg-accent rounded-full h-4 mr-2">
-                    <div class="bg-primary h-4 rounded-full" style="width: 65%"></div>
-                  </div>
-                  <span class="text-sm whitespace-nowrap">TypeScript (65%)</span>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-full bg-accent rounded-full h-4 mr-2">
-                    <div class="bg-primary h-4 rounded-full" style="width: 60%"></div>
-                  </div>
-                  <span class="text-sm whitespace-nowrap">AWS (60%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-card p-6 rounded-lg border border-border">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-medium">Recent Applications</h3>
-              <a href="#" @click.prevent="activeSidebar = 'applications'" class="text-sm text-primary">View all</a>
-            </div>
-            
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="border-b border-border">
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Candidate</th>
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Position</th>
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Match</th>
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Date</th>
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Status</th>
-                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="border-b border-border hover:bg-accent/50">
-                    <td class="px-4 py-4">
-                      <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                          <i data-lucide="user" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                          <p class="font-medium">Alex Johnson</p>
-                          <p class="text-xs text-muted-foreground">Software Engineer</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-4">Senior Software Engineer</td>
-                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98%</span></td>
-                    <td class="px-4 py-4 text-muted-foreground">April 1, 2023</td>
-                    <td class="px-4 py-4"><span class="bg-[#10b981]/10 text-[#10b981] text-xs px-2 py-1 rounded-full">New</span></td>
-                    <td class="px-4 py-4">
-                      <button class="text-primary hover:text-primary/80">Review</button>
-                    </td>
-                  </tr>
-                  <tr class="border-b border-border hover:bg-accent/50">
-                    <td class="px-4 py-4">
-                      <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                          <i data-lucide="user" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                          <p class="font-medium">Sarah Miller</p>
-                          <p class="text-xs text-muted-foreground">Frontend Developer</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-4">Frontend Developer</td>
-                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95%</span></td>
-                    <td class="px-4 py-4 text-muted-foreground">March 30, 2023</td>
-                    <td class="px-4 py-4"><span class="bg-[#f59e0b]/10 text-[#f59e0b] text-xs px-2 py-1 rounded-full">In Review</span></td>
-                    <td class="px-4 py-4">
-                      <button class="text-primary hover:text-primary/80">Continue</button>
-                    </td>
-                  </tr>
-                  <tr class="border-b border-border hover:bg-accent/50">
-                    <td class="px-4 py-4">
-                      <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                          <i data-lucide="user" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                          <p class="font-medium">David Wilson</p>
-                          <p class="text-xs text-muted-foreground">Full Stack Engineer</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-4">Full Stack Engineer</td>
-                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92%</span></td>
-                    <td class="px-4 py-4 text-muted-foreground">March 28, 2023</td>
-                    <td class="px-4 py-4"><span class="bg-[#6366f1]/10 text-[#6366f1] text-xs px-2 py-1 rounded-full">Interview</span></td>
-                    <td class="px-4 py-4">
-                      <button class="text-primary hover:text-primary/80">Schedule</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Candidates Content -->
-        <div x-show="activeSidebar === 'candidates'">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold">Talent Pool</h2>
-            <div class="flex space-x-2">
-              <div class="relative">
-                <input type="text" placeholder="Filter by skill..." class="input pl-10 py-2 text-sm text-foreground border border-border">
-                <i data-lucide="filter" class="w-4 h-4 absolute left-3 top-3 text-muted-foreground"></i>
-              </div>
-              <button class="btn-primary">
-                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                Save Search
-              </button>
-            </div>
-          </div>
-          
-          <div class="mb-6 p-4 bg-card rounded-lg border border-border">
-            <h3 class="font-medium mb-4">Top Matching Candidates for Senior Software Engineer</h3>
-            
-            <div class="grid grid-cols-2 gap-6">
-              <!-- Candidate Card 1 -->
-              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
-                <div class="p-4 flex items-start">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
-                    <i data-lucide="user" class="w-6 h-6"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <h4 class="font-medium">Alex Johnson</h4>
-                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
-                    </div>
-                    <p class="text-sm text-muted-foreground mb-2">Senior Software Engineer with 7 years of experience</p>
-                    
-                    <div class="flex flex-wrap gap-1 mb-3">
-                      <span class="badge">JavaScript</span>
-                      <span class="badge">React</span>
-                      <span class="badge">Node.js</span>
-                      <span class="badge">AWS</span>
-                      <span class="badge">TypeScript</span>
-                    </div>
-                    
-                    <div class="flex items-center text-sm text-muted-foreground mb-3">
-                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> San Francisco, CA</span>
-                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 7 years experience</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <span class="text-xs font-medium mr-2">Skills Match:</span>
-                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
-                          <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
-                        </div>
-                        <span class="text-xs ml-1">95%</span>
-                      </div>
-                      <div>
-                        <button class="text-primary text-sm hover:underline">View Profile</button>
-                      </div>
-                    </div>
-                  </div>
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-medium">Recruitment Progress</h3>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-muted-foreground">View by:</span>
+                  <select class="px-2 py-1 text-sm rounded border border-border bg-background">
+                    <option>All Positions</option>
+                    <option>Software Engineers</option>
+                    <option>Product Managers</option>
+                    <option>UX Designers</option>
+                  </select>
                 </div>
               </div>
               
-              <!-- Candidate Card 2 -->
-              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
-                <div class="p-4 flex items-start">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
-                    <i data-lucide="user" class="w-6 h-6"></i>
+              <div>
+                <h4 class="text-sm font-medium mb-3">Applications by Department</h4>
+                <div class="space-y-3 mb-6">
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Engineering</span>
+                      <span>45 applicants</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+                    </div>
                   </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <h4 class="font-medium">Jessica Brown</h4>
-                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">96% Match</span>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Product</span>
+                      <span>23 applicants</span>
                     </div>
-                    <p class="text-sm text-muted-foreground mb-2">Lead Developer with 9 years of experience</p>
-                    
-                    <div class="flex flex-wrap gap-1 mb-3">
-                      <span class="badge">JavaScript</span>
-                      <span class="badge">React</span>
-                      <span class="badge">GraphQL</span>
-                      <span class="badge">Docker</span>
-                      <span class="badge">CI/CD</span>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-primary h-2 rounded-full" style="width: 35%"></div>
                     </div>
-                    
-                    <div class="flex items-center text-sm text-muted-foreground mb-3">
-                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Austin, TX</span>
-                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 9 years experience</span>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Design</span>
+                      <span>19 applicants</span>
                     </div>
-                    
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <span class="text-xs font-medium mr-2">Skills Match:</span>
-                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
-                          <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
-                        </div>
-                        <span class="text-xs ml-1">90%</span>
-                      </div>
-                      <div>
-                        <button class="text-primary text-sm hover:underline">View Profile</button>
-                      </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-primary h-2 rounded-full" style="width: 25%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Marketing</span>
+                      <span>12 applicants</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-primary h-2 rounded-full" style="width: 15%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <h4 class="text-sm font-medium mb-3">Time in Pipeline</h4>
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Senior Software Engineer</span>
+                      <span>18 days avg</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 60%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Product Manager</span>
+                      <span>22 days avg</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>UX Designer</span>
+                      <span>15 days avg</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 50%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span>Marketing Specialist</span>
+                      <span>12 days avg</span>
+                    </div>
+                    <div class="w-full bg-background rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 40%"></div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+            
+            <!-- Top Candidates -->
+            <div class="bg-card p-6 rounded-lg border border-border">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium">Top Matches Today</h3>
+                <button class="text-primary text-sm flex items-center gap-1" onclick="showSection('candidates')">
+                  <span>View All</span>
+                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+              </div>
               
-              <!-- Candidate Card 3 -->
-              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
-                <div class="p-4 flex items-start">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
-                    <i data-lucide="user" class="w-6 h-6"></i>
+              <div class="space-y-3">
+                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                    <i data-lucide="user" class="w-5 h-5"></i>
                   </div>
                   <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <h4 class="font-medium">Michael Chen</h4>
-                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">94% Match</span>
-                    </div>
-                    <p class="text-sm text-muted-foreground mb-2">Senior Full Stack Developer with 6 years of experience</p>
-                    
-                    <div class="flex flex-wrap gap-1 mb-3">
-                      <span class="badge">JavaScript</span>
-                      <span class="badge">Vue.js</span>
-                      <span class="badge">Node.js</span>
-                      <span class="badge">MongoDB</span>
-                      <span class="badge">AWS</span>
-                    </div>
-                    
-                    <div class="flex items-center text-sm text-muted-foreground mb-3">
-                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Seattle, WA</span>
-                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 6 years experience</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
+                    <div class="flex justify-between">
                       <div>
-                        <span class="text-xs font-medium mr-2">Skills Match:</span>
-                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
-                          <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                        </div>
-                        <span class="text-xs ml-1">85%</span>
+                        <h4 class="font-medium">Emma Richards</h4>
+                        <p class="text-xs text-muted-foreground">Senior Software Engineer</p>
                       </div>
-                      <div>
-                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                      <div class="text-right">
+                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              
-              <!-- Candidate Card 4 -->
-              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
-                <div class="p-4 flex items-start">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
-                    <i data-lucide="user" class="w-6 h-6"></i>
+                
+                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                    <i data-lucide="user" class="w-5 h-5"></i>
                   </div>
                   <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <h4 class="font-medium">Emily Davis</h4>
-                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92% Match</span>
-                    </div>
-                    <p class="text-sm text-muted-foreground mb-2">Backend Engineer with 5 years of experience</p>
-                    
-                    <div class="flex flex-wrap gap-1 mb-3">
-                      <span class="badge">Java</span>
-                      <span class="badge">Spring Boot</span>
-                      <span class="badge">Kubernetes</span>
-                      <span class="badge">Microservices</span>
-                      <span class="badge">SQL</span>
-                    </div>
-                    
-                    <div class="flex items-center text-sm text-muted-foreground mb-3">
-                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Boston, MA</span>
-                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 5 years experience</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
+                    <div class="flex justify-between">
                       <div>
-                        <span class="text-xs font-medium mr-2">Skills Match:</span>
-                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
-                          <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
-                        </div>
-                        <span class="text-xs ml-1">80%</span>
+                        <h4 class="font-medium">Jason Martinez</h4>
+                        <p class="text-xs text-muted-foreground">Frontend Developer</p>
                       </div>
+                      <div class="text-right">
+                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95% Match</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
                       <div>
-                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                        <h4 class="font-medium">Sarah Kim</h4>
+                        <p class="text-xs text-muted-foreground">Product Manager</p>
+                      </div>
+                      <div class="text-right">
+                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">93% Match</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
+                      <div>
+                        <h4 class="font-medium">Alex Johnson</h4>
+                        <p class="text-xs text-muted-foreground">Software Engineer</p>
+                      </div>
+                      <div class="text-right">
+                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">91% Match</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
+                      <div>
+                        <h4 class="font-medium">Olivia Chen</h4>
+                        <p class="text-xs text-muted-foreground">UX Designer</p>
+                      </div>
+                      <div class="text-right">
+                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">90% Match</span>
                       </div>
                     </div>
                   </div>
@@ -454,31 +742,531 @@
       </div>
     </main>
   </div>
-  
+
   <script>
     // Initialize Lucide icons
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
-  </script>
-  
-  <!-- Chatbot Scripts -->
-  <script src="../chatbot.js"></script>
-  <script>
+    lucide.createIcons();
+    
+    // Function to show selected section and hide others
+    function showSection(sectionId) {
+      // Hide all content sections
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show the selected section
+      document.getElementById('section-' + sectionId).style.display = 'block';
+      
+      // Update active state in navigation
+      document.querySelectorAll('nav a').forEach(link => {
+        link.classList.remove('text-primary', 'font-medium', 'bg-primary/10');
+        link.classList.add('text-muted-foreground');
+      });
+      
+      // Add active state to clicked link
+      event.currentTarget.classList.remove('text-muted-foreground');
+      event.currentTarget.classList.add('text-primary', 'font-medium', 'bg-primary/10');
+    }
+    
+    // Direct chatbot functions without relying on external class
+    function sendChatMessage() {
+      const messageInput = document.getElementById('ai-message-input');
+      const message = messageInput.value.trim();
+      
+      if (message) {
+        // Add user message
+        addUserMessage(message);
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Show bot response
+        handleBotResponse(message);
+      }
+    }
+    
+    function sendQuickAction(message) {
+      if (message) {
+        // Add user message
+        addUserMessage(message);
+        
+        // Show bot response
+        handleBotResponse(message);
+      }
+    }
+    
+    function addUserMessage(message) {
+      const chatMessages = document.getElementById('ai-chat-messages');
+      const messageElement = document.createElement('div');
+      messageElement.className = 'chat-message chat-message-user';
+      messageElement.textContent = message;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function addBotMessage(message) {
+      const chatMessages = document.getElementById('ai-chat-messages');
+      const messageElement = document.createElement('div');
+      messageElement.className = 'chat-message chat-message-ai';
+      messageElement.innerHTML = message;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function showLoading() {
+      const chatMessages = document.getElementById('ai-chat-messages');
+      const loadingElement = document.createElement('div');
+      loadingElement.className = 'chat-message chat-message-ai loading';
+      loadingElement.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+      chatMessages.appendChild(loadingElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return loadingElement;
+    }
+    
+    function handleBotResponse(message) {
+      // Show loading indicator
+      const loadingElement = showLoading();
+      
+      // Process after a slight delay to simulate thinking
+      setTimeout(() => {
+        // Remove loading indicator
+        loadingElement.remove();
+        
+        // Define keywords for better matching
+        const keywords = {
+          candidates: ["candidate", "applicant", "talent", "developer", "engineer", "senior", "junior", "hire", "profile", "resume", "cv"],
+          skills: ["skill", "gap", "expertise", "knowledge", "experience", "qualification", "proficiency", "competency"],
+          interview: ["interview", "question", "assessment", "evaluation", "screening", "ask", "query"],
+          posting: ["posting", "job", "description", "listing", "position", "opening", "post", "optimize", "improve"],
+          statistics: ["statistics", "stats", "data", "metrics", "numbers", "figure", "report"],
+          compare: ["compare", "comparison", "versus", "vs", "qualification", "better", "stronger", "weaker", "match"]
+        };
+        
+        // Define candidate database for detailed responses
+        const candidates = {
+          "alex johnson": {
+            name: "Alex Johnson",
+            position: "Senior Software Engineer",
+            match: 98,
+            skills: ["JavaScript", "React", "Node.js", "TypeScript", "AWS"],
+            experience: "7 years",
+            education: "BS Computer Science, Stanford University",
+            strengths: ["Frontend architecture", "Performance optimization", "Team leadership"],
+            projects: ["Led a team of 5 engineers in redesigning the company's dashboard", "Reduced load time by 65%"],
+            availability: "Immediate",
+            whyTopMatch: "Alex is our top match because of his extensive experience with the exact tech stack we're using (React/Node.js), proven leadership abilities, and exceptional performance optimization skills that directly align with our current project needs.",
+            detailedReasoning: [
+              "Perfect tech stack alignment with our project requirements (React/Node.js/TypeScript)",
+              "7 years of relevant experience, including 3 years in a senior role",
+              "Proven track record of leadership (led team of 5 engineers)",
+              "Demonstrated measurable results (65% performance improvement)",
+              "Immediate availability which matches our urgent timeline"
+            ]
+          },
+          "sarah miller": {
+            name: "Sarah Miller",
+            position: "Senior Software Engineer",
+            match: 95,
+            skills: ["Python", "Django", "AWS", "Docker", "Kubernetes"],
+            experience: "6 years",
+            education: "MS Computer Engineering, MIT",
+            strengths: ["Cloud infrastructure", "Scalable systems", "CI/CD pipelines"],
+            projects: ["Architected microservices platform serving millions of users", "Implemented automated deployment pipeline"],
+            availability: "2 weeks notice",
+            whyTopMatch: "Sarah is highly ranked due to her expertise in cloud systems and scalable architecture. Her experience with AWS and containerization makes her ideal for our backend infrastructure needs.",
+            detailedReasoning: [
+              "Strong background in cloud systems (AWS) which is critical for our infrastructure migration",
+              "Experience with containerization (Docker, Kubernetes) matching our deployment strategy",
+              "Proven success with high-scale systems (platform serving millions of users)",
+              "Background in automation that will improve our deployment efficiency",
+              "Advanced degree (MS Computer Engineering) providing theoretical depth for architecture decisions"
+            ]
+          },
+          "david thompson": {
+            name: "David Thompson",
+            position: "Senior Software Engineer",
+            match: 92,
+            skills: ["Java", "Spring", "Microservices", "Oracle", "Kafka"],
+            experience: "8 years",
+            education: "BS Software Engineering, UC Berkeley",
+            strengths: ["Enterprise architecture", "Distributed systems", "Data integration"],
+            projects: ["Designed fault-tolerant payment processing system", "Led integration with 12 third-party services"],
+            availability: "1 month notice",
+            whyTopMatch: "David stands out for his extensive enterprise architecture experience and expertise with mission-critical systems. His work with high-volume data processing aligns with our transaction platform needs.",
+            detailedReasoning: [
+              "Most experienced candidate (8 years) with significant enterprise background",
+              "Expertise in mission-critical systems design (payment processing)",
+              "Strong background in integrations (12 third-party services) relevant to our product",
+              "Experience with Kafka for data streaming which we're implementing",
+              "Deep knowledge of distributed systems that will benefit our microservices architecture"
+            ]
+          },
+          "emma richards": {
+            name: "Emma Richards",
+            position: "Senior Software Engineer",
+            match: 98,
+            skills: ["React", "Node.js", "GraphQL", "Redux", "Testing"],
+            experience: "5 years",
+            education: "MS Computer Science, Georgia Tech",
+            strengths: ["Frontend architecture", "API design", "Testing strategies"],
+            projects: ["Built GraphQL API serving mobile and web clients", "Implemented comprehensive test automation"],
+            availability: "3 weeks notice",
+            whyTopMatch: "Emma is our top match due to her specialized expertise in GraphQL and modern React patterns. Her testing background is particularly valuable for our quality-focused development culture.",
+            detailedReasoning: [
+              "Expert in GraphQL which is central to our API modernization initiative",
+              "Strong testing focus matching our commitment to quality (implemented test automation)",
+              "Experience with both mobile and web clients aligning with our multi-platform strategy",
+              "Advanced degree with specialization in distributed systems relevant to our architecture",
+              "Recent hands-on experience with modern React patterns we're adopting"
+            ]
+          },
+          "jason martinez": {
+            name: "Jason Martinez",
+            position: "Frontend Developer",
+            match: 95,
+            skills: ["JavaScript", "React", "CSS/SASS", "Webpack", "UI/UX"],
+            experience: "4 years",
+            education: "BA Design & Computer Science, NYU",
+            strengths: ["UI component systems", "Responsive design", "Performance"],
+            projects: ["Created design system used across 15 products", "Optimized rendering performance in high-load interfaces"],
+            availability: "2 weeks notice",
+            whyTopMatch: "Jason is highly ranked for his unique combination of technical and design skills. His experience building component libraries directly aligns with our UI modernization initiative.",
+            detailedReasoning: [
+              "Unique dual expertise in both design and development, perfect for our design system project",
+              "Previous success creating a design system (used across 15 products)",
+              "Performance optimization experience with high-load interfaces matching our UX requirements",
+              "Strong foundation in modern front-end tooling (React, Webpack, SASS) that we use",
+              "Educational background combining design and CS provides the interdisciplinary skills we need"
+            ]
+          }
+        };
+        
+        // Normalize message for better matching
+        const normalizedMsg = message.toLowerCase();
+        
+        // Check for specific candidate questions
+        const candidateNames = Object.keys(candidates);
+        let specificCandidate = null;
+        
+        for (const name of candidateNames) {
+          if (normalizedMsg.includes(name)) {
+            specificCandidate = name;
+            break;
+          }
+        }
+        
+        // Handle "why" questions about candidates
+        if (specificCandidate && (normalizedMsg.includes("why") || normalizedMsg.includes("reason") || 
+            normalizedMsg.includes("qualified") || normalizedMsg.includes("good fit") || 
+            normalizedMsg.includes("match") || normalizedMsg.includes("suitable"))) {
+          
+          const candidate = candidates[specificCandidate];
+          
+          // Use the new candidate card styling
+          response = `<div class="candidate-card">
+            <div class="candidate-header">
+              <span class="candidate-name">${candidate.name}</span>
+              <span class="candidate-match">${candidate.match}% Match</span>
+            </div>
+            
+            <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
+            
+            <div class="candidate-skill-list">
+              ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
+            </div>
+            
+            <div class="candidate-reason">
+              ${candidate.whyTopMatch}
+            </div>
+            
+            <div class="candidate-section">
+              <div class="candidate-section-title">Why This Candidate Stands Out:</div>
+              <ul style="padding-left: 16px; margin-top: 4px;">
+                ${candidate.detailedReasoning.map(reason => `<li>${reason}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="candidate-section">
+              <div class="candidate-section-title">Notable Achievements:</div>
+              <ul style="padding-left: 16px; margin-top: 4px;">
+                ${candidate.projects.map(project => `<li>${project}</li>`).join('')}
+              </ul>
+            </div>
+          </div>`;
+          
+          addBotMessage(response);
+          return;
+        }
+        
+        // Handle detailed profile requests
+        if (specificCandidate && (normalizedMsg.includes("profile") || normalizedMsg.includes("details") || 
+            normalizedMsg.includes("about") || normalizedMsg.includes("info"))) {
+          
+          const candidate = candidates[specificCandidate];
+          
+          // Use the new candidate card styling
+          response = `<div class="candidate-card">
+            <div class="candidate-header">
+              <span class="candidate-name">${candidate.name}</span>
+              <span class="candidate-match">${candidate.match}% Match</span>
+            </div>
+            
+            <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
+            
+            <div class="candidate-skill-list">
+              ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
+            </div>
+            
+            <div class="candidate-section">
+              <div class="candidate-section-title">Background</div>
+              <div class="candidate-detail"><b>Education:</b> ${candidate.education}</div>
+              <div class="candidate-detail"><b>Availability:</b> ${candidate.availability}</div>
+            </div>
+            
+            <div class="candidate-section">
+              <div class="candidate-section-title">Key Strengths</div>
+              <ul style="padding-left: 16px; margin-top: 4px;">
+                ${candidate.strengths.map(strength => `<li>${strength}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="candidate-section">
+              <div class="candidate-section-title">Notable Projects</div>
+              <ul style="padding-left: 16px; margin-top: 4px;">
+                ${candidate.projects.map(project => `<li>${project}</li>`).join('')}
+              </ul>
+            </div>
+          </div>`;
+          
+          addBotMessage(response);
+          return;
+        }
+        
+        // Check which category the message falls into
+        let matchedCategory = null;
+        
+        // Check for category matches
+        for (const [category, categoryKeywords] of Object.entries(keywords)) {
+          if (categoryKeywords.some(keyword => normalizedMsg.includes(keyword))) {
+            matchedCategory = category;
+            break;
+          }
+        }
+        
+        // Generate responses based on category
+        let response;
+        
+        switch (matchedCategory) {
+          case "candidates":
+            // Handle general questions about top candidates
+            if (normalizedMsg.includes("top") || normalizedMsg.includes("best")) {
+              // Create a more structured response with the new styling
+              const topCandidates = ["emma richards", "alex johnson", "sarah miller"];
+              let candidatesHtml = '';
+              
+              for (const name of topCandidates) {
+                const candidate = candidates[name];
+                candidatesHtml += `<div class="candidate-card">
+                  <div class="candidate-header">
+                    <span class="candidate-name">${candidate.name}</span>
+                    <span class="candidate-match">${candidate.match}% Match</span>
+                  </div>
+                  
+                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
+                  
+                  <div class="candidate-skill-list">
+                    ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
+                  </div>
+                  
+                  <div class="candidate-reason">
+                    ${candidate.whyTopMatch}
+                  </div>
+                </div>`;
+              }
+              
+              response = `<div>
+                <p>Here are our top 3 candidates for the Senior Developer role:</p>
+                ${candidatesHtml}
+                <p style="margin-top: 12px;">Would you like more details about any of these candidates?</p>
+              </div>`;
+            } else if (normalizedMsg.includes("why") && normalizedMsg.includes("top")) {
+              // General explanation about what makes candidates top matches
+              response = `<div>
+                <p>Our top candidates are selected based on several factors:</p>
+                
+                <div style="background-color: var(--accent); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                  <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">Key Selection Criteria:</div>
+                  <ol style="padding-left: 20px; margin: 0;">
+                    <li><b>Skills alignment</b> with the specific job requirements (80%)</li>
+                    <li><b>Experience level</b> and relevance to the position (75%)</li>
+                    <li><b>Project history</b> showing success in similar roles (65%)</li>
+                    <li><b>Technical assessment scores</b> from our evaluation process (90%)</li>
+                    <li><b>Cultural fit indicators</b> from our preliminary screening (85%)</li>
+                  </ol>
+                </div>
+                
+                <p>Each candidate receives a match percentage based on a weighted score of these factors. Would you like specific details about why a particular candidate is ranked highly?</p>
+              </div>`;
+            } else {
+              // Create a more structured response with the new styling
+              const topCandidates = ["emma richards", "alex johnson", "sarah miller", "david thompson"];
+              let candidatesHtml = '';
+              
+              for (const name of topCandidates) {
+                const candidate = candidates[name];
+                candidatesHtml += `<div class="candidate-card">
+                  <div class="candidate-header">
+                    <span class="candidate-name">${candidate.name}</span>
+                    <span class="candidate-match">${candidate.match}% Match</span>
+                  </div>
+                  
+                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
+                  
+                  <div class="candidate-skill-list">
+                    ${candidate.skills.slice(0, 3).map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
+                  </div>
+                </div>`;
+              }
+              
+              response = `<div>
+                <p>Here are the top candidates for the Senior Developer role:</p>
+                ${candidatesHtml}
+                <p style="margin-top: 12px;">To learn more about why a specific candidate is a top match, ask "Why is [candidate name] a top match?"</p>
+              </div>`;
+            }
+            break;
+          
+          case "skills":
+            response = "Based on your job requirements and current applicant pool, here are the skill gaps:<br><br>" +
+              "- <b>Kubernetes experience</b>: Only 12% of applicants have this skill<br>" +
+              "- <b>GraphQL</b>: Only 18% of applicants have this skill<br>" +
+              "- <b>System Architecture</b>: Only 25% of applicants meet your requirements<br><br>" +
+              "Consider modifying your job posting to emphasize these skills or adjusting your requirements.";
+            break;
+          
+          case "interview":
+            response = "Here are some suggested technical interview questions for a Senior Developer:<br><br>" +
+              "1. How would you design a system that processes millions of events per day?<br>" +
+              "2. Describe your approach to refactoring legacy code.<br>" +
+              "3. How do you ensure code quality and maintainability in large projects?<br>" +
+              "4. Explain your experience with microservices architecture.<br>" +
+              "5. How would you handle a critical production issue?";
+            break;
+          
+          case "posting":
+            response = "Based on my analysis, here's how you could optimize your job posting:<br><br>" +
+              "1. <b>Be more specific</b> about required technologies<br>" +
+              "2. <b>Highlight remote work options</b> more prominently<br>" +
+              "3. <b>Include salary range</b> to attract qualified candidates<br>" +
+              "4. <b>Mention career growth</b> opportunities<br>" +
+              "5. <b>Simplify the skills section</b> to focus on must-haves vs. nice-to-haves";
+            break;
+          
+          case "statistics":
+            response = "Here are your current application statistics:<br><br>" +
+              "<b>Total Applications:</b> 247<br>" +
+              "<b>Qualified Candidates:</b> 68 (27.5%)<br>" +
+              "<b>High Match Score (>90%):</b> 23 (9.3%)<br>" +
+              "<b>Average Experience:</b> 4.2 years<br>" +
+              "<b>Application Sources:</b> LinkedIn (42%), Indeed (28%), Direct (30%)";
+            break;
+          
+          case "compare":
+            response = "Here's a comparison of your top candidates for the Senior Developer role:<br><br>" +
+              "<b>Alex Johnson vs. Sarah Miller</b><br>" +
+              "- Alex has stronger frontend experience (React, Angular)<br>" +
+              "- Sarah has better cloud expertise (AWS, Azure)<br>" +
+              "- Both have comparable years of experience<br>" +
+              "- Alex is available immediately, Sarah has a 2-week notice<br><br>" +
+              "Based on your requirements, Alex might be a better fit for the role.";
+            break;
+          
+          default:
+            // If no specific category is matched, provide a more intelligent fallback
+            if (normalizedMsg.includes("top") && normalizedMsg.includes("senior") && normalizedMsg.includes("dev")) {
+              // Create a more structured response with the new styling
+              const topCandidates = ["emma richards", "alex johnson", "sarah miller"];
+              let candidatesHtml = '';
+              
+              for (const name of topCandidates) {
+                const candidate = candidates[name];
+                candidatesHtml += `<div class="candidate-card">
+                  <div class="candidate-header">
+                    <span class="candidate-name">${candidate.name}</span>
+                    <span class="candidate-match">${candidate.match}% Match</span>
+                  </div>
+                  
+                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
+                  
+                  <div class="candidate-skill-list">
+                    ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
+                  </div>
+                  
+                  <div class="candidate-reason">
+                    ${candidate.whyTopMatch}
+                  </div>
+                </div>`;
+              }
+              
+              response = `<div>
+                <p>Here are our top candidates for the Senior Developer role:</p>
+                ${candidatesHtml}
+                <p style="margin-top: 12px;">Would you like more details about why any of these candidates are top matches?</p>
+              </div>`;
+            } else if (normalizedMsg.includes("why") && (normalizedMsg.includes("candidate") || normalizedMsg.includes("match"))) {
+              // Create a more structured explanation of matching criteria
+              response = `<div>
+                <p>Our matching algorithm evaluates candidates based on several factors:</p>
+                
+                <div style="background-color: var(--accent); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                  <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">Key Matching Criteria:</div>
+                  <ol style="padding-left: 20px; margin: 0;">
+                    <li><b>Skills alignment</b> with the specific job requirements</li>
+                    <li><b>Experience level</b> and relevance to the position</li>
+                    <li><b>Project history</b> showing success in similar roles</li>
+                    <li><b>Technical assessment scores</b> from our evaluation process</li>
+                  </ol>
+                </div>
+                
+                <p>Would you like details about a specific candidate, such as Emma Richards or Alex Johnson?</p>
+              </div>`;
+            } else {
+              // Try to extract potential topics from the query
+              const query = normalizedMsg.split(' ').filter(word => word.length > 3);
+              response = "I'll help you with that. Based on your question about ";
+              
+              if (query.length > 0) {
+                // Extract a subject from the query if possible
+                const subject = query.find(word => word.length > 4) || query[0];
+                response += `<b>${subject}</b>, here's what I can tell you:<br><br>`;
+                
+                if (normalizedMsg.includes("how") || normalizedMsg.includes("what")) {
+                  response += "Our system currently tracks data across the entire recruitment pipeline, from job listings to offers. ";
+                  response += "I can help with specific insights about candidates, skills, roles, or metrics if you provide more details.";
+                } else {
+                  response += "I can provide detailed information about our recruitment process, candidate profiles, skill assessments, and hiring metrics. ";
+                  response += "Would you like me to focus on a specific aspect like top candidates, skill gaps, or application statistics?";
+                }
+              } else {
+                response = "I'd be happy to help. Could you provide more details about what specific recruitment information you're looking for?";
+              }
+            }
+        }
+        
+        // Add AI message to chat
+        addBotMessage(response);
+      }, 1000);
+    }
+    
+    // Add event listener for Enter key on input field
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize the chatbot with employer suggestions
-      const employerBot = new Chatbot({
-        userType: 'employer',
-        suggestions: [
-          'Show top candidates',
-          'Skill gap analysis',
-          'Application statistics',
-          'Optimize job posting'
-        ],
-        userData: {
-          companyName: 'TechCorp',
-          jobTitle: 'Senior Software Engineer',
-          requiredSkills: ['JavaScript', 'React', 'Node.js', 'AWS']
+      showSection('dashboard');
+      
+      // Add event listener for Enter key
+      const messageInput = document.getElementById('ai-message-input');
+      messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          sendChatMessage();
         }
       });
     });
