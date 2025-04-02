@@ -410,5 +410,27 @@
       lucide.createIcons();
     });
   </script>
+  
+  <!-- Chatbot Scripts -->
+  <script src="../chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the chatbot with job seeker suggestions
+      const jobSeekerBot = new Chatbot({
+        userType: 'job_seeker',
+        suggestions: [
+          'Show my top job matches',
+          'What are the latest job postings?',
+          'Skills I should develop',
+          'Salary information'
+        ],
+        userData: {
+          name: 'Alex Johnson',
+          title: 'Software Engineer',
+          skills: ['JavaScript', 'React', 'Node.js', 'MongoDB']
+        }
+      });
+    });
+  </script>
 </body>
 </html> 
