@@ -461,5 +461,27 @@
       lucide.createIcons();
     });
   </script>
+  
+  <!-- Chatbot Scripts -->
+  <script src="../chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the chatbot with employer suggestions
+      const employerBot = new Chatbot({
+        userType: 'employer',
+        suggestions: [
+          'Show top candidates',
+          'Skill gap analysis',
+          'Application statistics',
+          'Optimize job posting'
+        ],
+        userData: {
+          companyName: 'TechCorp',
+          jobTitle: 'Senior Software Engineer',
+          requiredSkills: ['JavaScript', 'React', 'Node.js', 'AWS']
+        }
+      });
+    });
+  </script>
 </body>
 </html> 
