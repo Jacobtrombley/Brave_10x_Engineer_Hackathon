@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employer Dashboard | Brave Talent Match</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-background text-foreground" x-data="{ activeSidebar: 'dashboard' }">
+  <div class="grid grid-cols-[280px_1fr]">
+    <!-- Sidebar -->
+    <aside class="bg-card h-screen border-r border-border flex flex-col">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold text-primary">Brave Talent Match</h1>
+        <p class="text-sm text-muted-foreground">Employer Portal</p>
+      </div>
+      
+      <nav class="flex-1 px-4 space-y-1">
+        <a @click.prevent="activeSidebar = 'dashboard'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+          Dashboard
+        </a>
+        <a @click.prevent="activeSidebar = 'jobs'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'jobs' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i>
+          Job Listings
+        </a>
+        <a @click.prevent="activeSidebar = 'candidates'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'candidates' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="users" class="w-5 h-5 mr-3"></i>
+          Candidates
+        </a>
+        <a @click.prevent="activeSidebar = 'applications'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'applications' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="inbox" class="w-5 h-5 mr-3"></i>
+          Applications
+        </a>
+        <a @click.prevent="activeSidebar = 'analytics'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'analytics' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="bar-chart" class="w-5 h-5 mr-3"></i>
+          Analytics
+        </a>
+        <a @click.prevent="activeSidebar = 'settings'" href="#" 
+           class="flex items-center px-3 py-2 rounded-md text-sm font-medium"
+           :class="activeSidebar === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
+          <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
+          Settings
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-border">
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <i data-lucide="building" class="w-5 h-5"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium">TechCorp Inc.</p>
+            <p class="text-xs text-muted-foreground">Recruiting Team</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="h-screen overflow-auto">
+      <!-- Header -->
+      <header class="bg-card border-b border-border p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <button class="text-muted-foreground hover:text-foreground">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </button>
+          <button class="text-muted-foreground hover:text-foreground">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div class="relative">
+          <input type="text" placeholder="Search candidates..." class="input w-80 pl-10 py-2 rounded-full bg-background text-sm text-foreground border border-border">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-muted-foreground"></i>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-6">
+        <!-- Dashboard Content -->
+        <div x-show="activeSidebar === 'dashboard'">
+          <h2 class="text-2xl font-bold mb-6">Employer Dashboard</h2>
+          
+          <div class="grid grid-cols-3 gap-6 mb-8">
+            <div class="bg-card p-6 rounded-lg border border-border">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium">Active Jobs</h3>
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <i data-lucide="briefcase" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <p class="text-3xl font-bold">12</p>
+              <p class="text-sm text-muted-foreground">3 posted this week</p>
+            </div>
+            
+            <div class="bg-card p-6 rounded-lg border border-border">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium">Total Applications</h3>
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <i data-lucide="file-text" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <p class="text-3xl font-bold">247</p>
+              <p class="text-sm text-muted-foreground">34 new this week</p>
+            </div>
+            
+            <div class="bg-card p-6 rounded-lg border border-border">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium">Top Matches</h3>
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <i data-lucide="check-circle" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <p class="text-3xl font-bold">58</p>
+              <p class="text-sm text-muted-foreground">High match candidates</p>
+            </div>
+          </div>
+          
+          <div class="flex gap-6 mb-8">
+            <div class="bg-card p-6 rounded-lg border border-border flex-1">
+              <h3 class="text-lg font-medium mb-4">Job Match Analytics</h3>
+              <div class="h-64 bg-accent rounded-md flex items-center justify-center">
+                <p class="text-muted-foreground">Job match analytics chart placeholder</p>
+              </div>
+            </div>
+            
+            <div class="bg-card p-6 rounded-lg border border-border w-1/3">
+              <h3 class="text-lg font-medium mb-4">Top Skills in Demand</h3>
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <div class="w-full bg-accent rounded-full h-4 mr-2">
+                    <div class="bg-primary h-4 rounded-full" style="width: 85%"></div>
+                  </div>
+                  <span class="text-sm whitespace-nowrap">JavaScript (85%)</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-full bg-accent rounded-full h-4 mr-2">
+                    <div class="bg-primary h-4 rounded-full" style="width: 78%"></div>
+                  </div>
+                  <span class="text-sm whitespace-nowrap">React (78%)</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-full bg-accent rounded-full h-4 mr-2">
+                    <div class="bg-primary h-4 rounded-full" style="width: 72%"></div>
+                  </div>
+                  <span class="text-sm whitespace-nowrap">Node.js (72%)</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-full bg-accent rounded-full h-4 mr-2">
+                    <div class="bg-primary h-4 rounded-full" style="width: 65%"></div>
+                  </div>
+                  <span class="text-sm whitespace-nowrap">TypeScript (65%)</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-full bg-accent rounded-full h-4 mr-2">
+                    <div class="bg-primary h-4 rounded-full" style="width: 60%"></div>
+                  </div>
+                  <span class="text-sm whitespace-nowrap">AWS (60%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-card p-6 rounded-lg border border-border">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-medium">Recent Applications</h3>
+              <a href="#" @click.prevent="activeSidebar = 'applications'" class="text-sm text-primary">View all</a>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-border">
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Candidate</th>
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Position</th>
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Match</th>
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Date</th>
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Status</th>
+                    <th class="text-left font-medium text-muted-foreground px-4 py-2">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-border hover:bg-accent/50">
+                    <td class="px-4 py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                          <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                          <p class="font-medium">Alex Johnson</p>
+                          <p class="text-xs text-muted-foreground">Software Engineer</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-4">Senior Software Engineer</td>
+                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98%</span></td>
+                    <td class="px-4 py-4 text-muted-foreground">April 1, 2023</td>
+                    <td class="px-4 py-4"><span class="bg-[#10b981]/10 text-[#10b981] text-xs px-2 py-1 rounded-full">New</span></td>
+                    <td class="px-4 py-4">
+                      <button class="text-primary hover:text-primary/80">Review</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b border-border hover:bg-accent/50">
+                    <td class="px-4 py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                          <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                          <p class="font-medium">Sarah Miller</p>
+                          <p class="text-xs text-muted-foreground">Frontend Developer</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-4">Frontend Developer</td>
+                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95%</span></td>
+                    <td class="px-4 py-4 text-muted-foreground">March 30, 2023</td>
+                    <td class="px-4 py-4"><span class="bg-[#f59e0b]/10 text-[#f59e0b] text-xs px-2 py-1 rounded-full">In Review</span></td>
+                    <td class="px-4 py-4">
+                      <button class="text-primary hover:text-primary/80">Continue</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b border-border hover:bg-accent/50">
+                    <td class="px-4 py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                          <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                          <p class="font-medium">David Wilson</p>
+                          <p class="text-xs text-muted-foreground">Full Stack Engineer</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-4">Full Stack Engineer</td>
+                    <td class="px-4 py-4"><span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92%</span></td>
+                    <td class="px-4 py-4 text-muted-foreground">March 28, 2023</td>
+                    <td class="px-4 py-4"><span class="bg-[#6366f1]/10 text-[#6366f1] text-xs px-2 py-1 rounded-full">Interview</span></td>
+                    <td class="px-4 py-4">
+                      <button class="text-primary hover:text-primary/80">Schedule</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Candidates Content -->
+        <div x-show="activeSidebar === 'candidates'">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Talent Pool</h2>
+            <div class="flex space-x-2">
+              <div class="relative">
+                <input type="text" placeholder="Filter by skill..." class="input pl-10 py-2 text-sm text-foreground border border-border">
+                <i data-lucide="filter" class="w-4 h-4 absolute left-3 top-3 text-muted-foreground"></i>
+              </div>
+              <button class="btn-primary">
+                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                Save Search
+              </button>
+            </div>
+          </div>
+          
+          <div class="mb-6 p-4 bg-card rounded-lg border border-border">
+            <h3 class="font-medium mb-4">Top Matching Candidates for Senior Software Engineer</h3>
+            
+            <div class="grid grid-cols-2 gap-6">
+              <!-- Candidate Card 1 -->
+              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
+                <div class="p-4 flex items-start">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h4 class="font-medium">Alex Johnson</h4>
+                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-2">Senior Software Engineer with 7 years of experience</p>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                      <span class="badge">JavaScript</span>
+                      <span class="badge">React</span>
+                      <span class="badge">Node.js</span>
+                      <span class="badge">AWS</span>
+                      <span class="badge">TypeScript</span>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-muted-foreground mb-3">
+                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> San Francisco, CA</span>
+                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 7 years experience</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span class="text-xs font-medium mr-2">Skills Match:</span>
+                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
+                          <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                        </div>
+                        <span class="text-xs ml-1">95%</span>
+                      </div>
+                      <div>
+                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Candidate Card 2 -->
+              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
+                <div class="p-4 flex items-start">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h4 class="font-medium">Jessica Brown</h4>
+                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">96% Match</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-2">Lead Developer with 9 years of experience</p>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                      <span class="badge">JavaScript</span>
+                      <span class="badge">React</span>
+                      <span class="badge">GraphQL</span>
+                      <span class="badge">Docker</span>
+                      <span class="badge">CI/CD</span>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-muted-foreground mb-3">
+                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Austin, TX</span>
+                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 9 years experience</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span class="text-xs font-medium mr-2">Skills Match:</span>
+                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
+                          <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
+                        </div>
+                        <span class="text-xs ml-1">90%</span>
+                      </div>
+                      <div>
+                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Candidate Card 3 -->
+              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
+                <div class="p-4 flex items-start">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h4 class="font-medium">Michael Chen</h4>
+                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">94% Match</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-2">Senior Full Stack Developer with 6 years of experience</p>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                      <span class="badge">JavaScript</span>
+                      <span class="badge">Vue.js</span>
+                      <span class="badge">Node.js</span>
+                      <span class="badge">MongoDB</span>
+                      <span class="badge">AWS</span>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-muted-foreground mb-3">
+                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Seattle, WA</span>
+                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 6 years experience</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span class="text-xs font-medium mr-2">Skills Match:</span>
+                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
+                          <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <span class="text-xs ml-1">85%</span>
+                      </div>
+                      <div>
+                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Candidate Card 4 -->
+              <div class="border border-border rounded-lg overflow-hidden hover:shadow-md transition-all">
+                <div class="p-4 flex items-start">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h4 class="font-medium">Emily Davis</h4>
+                      <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">92% Match</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-2">Backend Engineer with 5 years of experience</p>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                      <span class="badge">Java</span>
+                      <span class="badge">Spring Boot</span>
+                      <span class="badge">Kubernetes</span>
+                      <span class="badge">Microservices</span>
+                      <span class="badge">SQL</span>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-muted-foreground mb-3">
+                      <span class="flex items-center mr-4"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Boston, MA</span>
+                      <span class="flex items-center"><i data-lucide="briefcase" class="w-4 h-4 mr-1"></i> 5 years experience</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span class="text-xs font-medium mr-2">Skills Match:</span>
+                        <div class="inline-block w-32 h-2 bg-accent rounded-full">
+                          <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <span class="text-xs ml-1">80%</span>
+                      </div>
+                      <div>
+                        <button class="text-primary text-sm hover:underline">View Profile</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html> 
