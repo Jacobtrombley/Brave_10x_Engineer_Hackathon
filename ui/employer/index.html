@@ -4,1272 +4,1808 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employer Dashboard | Brave Talent Match</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <script defer src="https://unpkg.com/lucide@latest"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="../chatbot.js"></script>
   <style>
-    .ai-assistant-container {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --foreground: #1f2937;
+      --foreground-muted: #6b7280;
+      --background: #ffffff;
+      --background-light: #f9fafb;
+      --border: #e5e7eb;
+      --border-dark: #d1d5db;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --radius: 8px;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --card-padding: 16px;
+      --card-radius: 8px;
+      --button-padding: 8px 16px;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--foreground);
+      background-color: var(--background);
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+    
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      height: 100vh;
+    }
+    
+    .sidebar {
+      background-color: var(--background-light);
+      border-right: 1px solid var(--border);
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background-color: var(--card);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      height: calc(100vh - 210px);
-      margin-bottom: 1rem;
-    }
-    
-    .ai-assistant-header {
-      display: flex;
-      align-items: center;
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .ai-assistant-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-    }
-    
-    .ai-assistant-header h3 {
-      font-weight: 600;
-      margin: 0;
-      color: var(--primary);
-    }
-    
-    .ai-assistant-body {
-      flex: 1;
-      padding: 1rem;
+      gap: 24px;
       overflow-y: auto;
     }
     
-    .ai-assistant-footer {
-      border-top: 1px solid var(--border);
-      padding: 1rem;
+    .sidebar-heading {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground-muted);
+    }
+    
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      color: var(--foreground-muted);
+      text-decoration: none;
+    }
+    
+    .nav-item:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .nav-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 500;
+    }
+    
+    .main {
+      padding: 24px;
+      overflow-y: auto;
+      max-width: 100%;
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    .content-section {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .job-search-section {
+      background-color: var(--background-light);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .job-search-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 16px;
+      outline: none;
+    }
+    
+    .job-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    
+    .job-card {
+      background-color: var(--background);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      position: relative;
+    }
+    
+    .job-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .job-card-company {
+      font-size: 14px;
+      color: var(--foreground-muted);
+      margin-bottom: 12px;
+    }
+    
+    .match-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .skills-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    
+    .skill-tag {
+      background-color: var(--background-light);
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .app-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .app-card {
+      background-color: var(--background);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+    
+    .app-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .app-card-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .app-card-count {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .candidate-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 16px;
+    }
+    
+    .candidate-card {
+      background-color: var(--background);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+    
+    .candidate-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .candidate-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .match-percentage {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .ai-assistant-container {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 400px;
+      max-height: 600px;
+    }
+    
+    .ai-assistant-messages {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .ai-assistant-input-container {
       display: flex;
       gap: 8px;
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      background-color: var(--background-light);
     }
     
     .ai-assistant-input {
       flex: 1;
-      background-color: var(--background);
+      padding: 10px;
+      border-radius: 6px;
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 8px 16px;
       font-size: 14px;
+      resize: none;
+      height: 40px;
       outline: none;
-      transition: border-color 0.2s ease;
     }
     
-    .ai-assistant-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
-    }
-    
-    #ai-send-btn {
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    
-    #ai-send-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      background-color: var(--primary-hover, var(--primary));
-    }
-    
-    #ai-send-btn:active {
-      transform: translateY(0);
-    }
-    
-    #ai-send-btn i {
-      transition: transform 0.2s ease;
-    }
-    
-    #ai-send-btn:hover i {
-      transform: rotate(45deg) scale(1.1);
-    }
-    
-    .ai-quick-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    
-    .ai-quick-action {
-      background-color: var(--accent);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-size: 13px;
+    .ai-assistant-send {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0 16px;
       cursor: pointer;
-      transition: all 0.2s;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    .ai-quick-action:hover {
-      background-color: var(--muted);
+    .chat-message-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .user-message-container {
+      align-items: flex-end;
+    }
+    
+    .bot-message-container {
+      align-items: flex-start;
     }
     
     .chat-message {
-      margin-bottom: 16px;
-      max-width: 85%;
-      line-height: 1.5;
-      letter-spacing: 0.01em;
-    }
-    
-    .chat-message-user {
-      align-self: flex-end;
-      margin-left: auto;
-      background-color: var(--primary);
-      color: white;
-      padding: 12px 16px;
-      border-radius: 18px 18px 4px 18px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-    
-    .chat-message-ai {
-      align-self: flex-start;
-      background-color: var(--accent);
-      padding: 12px 16px;
-      border-radius: 18px 18px 18px 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-    
-    /* Enhanced chat content styling */
-    .chat-message-ai b {
-      color: var(--primary);
-      font-weight: 600;
-    }
-    
-    .chat-message-ai br {
-      content: "";
-      display: block;
-      margin-bottom: 4px;
-    }
-    
-    /* Candidate card styling */
-    .candidate-card {
-      background-color: var(--background);
-      border-radius: 8px;
+      max-width: 80%;
       padding: 12px;
-      margin: 8px 0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .user-message {
+      background-color: var(--primary-light);
+      color: var(--foreground);
+      align-self: flex-end;
+    }
+    
+    .bot-message {
+      background-color: var(--background-light);
+      color: var(--foreground);
       border: 1px solid var(--border);
     }
     
-    .candidate-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      align-items: center;
+    .message-content {
+      white-space: pre-wrap;
     }
     
-    .candidate-name {
-      font-weight: 600;
-      color: var(--foreground);
-    }
-    
-    .candidate-match {
-      background-color: var(--primary-light, rgba(var(--primary-rgb), 0.1));
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-    
-    .candidate-skill-list {
+    .quick-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
-      margin: 8px 0;
+      gap: 8px;
+      margin-bottom: 16px;
     }
     
-    .candidate-skill {
-      background-color: var(--muted);
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: var(--muted-foreground);
-    }
-    
-    .candidate-section {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .candidate-section-title {
-      font-weight: 500;
-      font-size: 13px;
-      margin-bottom: 4px;
-      color: var(--primary);
-    }
-    
-    .candidate-detail {
-      margin-bottom: 2px;
-      font-size: 13px;
-    }
-    
-    .candidate-reason {
-      background-color: rgba(var(--primary-rgb), 0.05);
-      border-left: 3px solid var(--primary);
-      padding: 8px 12px;
-      margin: 8px 0;
-      font-style: italic;
+    .quick-action {
+      background-color: var(--background-light);
+      border: 1px solid var(--border);
       color: var(--foreground);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
     
-    .loading-dots {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
+    .quick-action:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary-light);
     }
     
-    .loading-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--muted-foreground);
-      animation: loadingDots 1.4s infinite ease-in-out both;
-    }
-    
-    .loading-dots span:nth-child(1) {
-      animation-delay: -0.32s;
-    }
-    
-    .loading-dots span:nth-child(2) {
-      animation-delay: -0.16s;
-    }
-    
-    @keyframes loadingDots {
-      0%, 80%, 100% { 
-        transform: scale(0);
-      } 
-      40% { 
-        transform: scale(1.0);
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
       }
     }
   </style>
 </head>
-<body class="bg-background text-foreground" x-data="{ activeSidebar: 'dashboard' }">
-  <div class="grid grid-cols-[280px_1fr]">
-    <!-- Sidebar -->
-    <aside class="bg-card h-screen border-r border-border flex flex-col">
-      <div class="p-6">
-        <h1 class="text-2xl font-bold text-primary">Brave Talent Match</h1>
-        <p class="text-sm text-muted-foreground">Employer Portal</p>
+<body>
+  <!-- Job Listing Modal -->
+  <div id="create-job-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; overflow-y: auto;">
+    <div style="background-color: white; margin: 40px auto; max-width: 700px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: relative;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+        <h2 style="margin: 0; font-size: 20px;">Create New Job Listing</h2>
+        <button id="close-modal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; cursor: pointer; color: var(--foreground-muted);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
       
-      <nav class="flex-1 px-4 space-y-1">
-        <a id="nav-dashboard" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item active"
-           :class="activeSidebar === 'dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+      <form id="job-listing-form" style="padding: 20px;">
+        <div style="margin-bottom: 16px;">
+          <label for="job-title" style="display: block; margin-bottom: 6px; font-weight: 500;">Job Title*</label>
+          <input type="text" id="job-title" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label for="job-department" style="display: block; margin-bottom: 6px; font-weight: 500;">Department*</label>
+            <input type="text" id="job-department" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+          </div>
+          
+          <div>
+            <label for="job-type" style="display: block; margin-bottom: 6px; font-weight: 500;">Job Type*</label>
+            <select id="job-type" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="job-location" style="display: block; margin-bottom: 6px; font-weight: 500;">Location*</label>
+          <input type="text" id="job-location" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="job-skills" style="display: block; margin-bottom: 6px; font-weight: 500;">Required Skills* (comma separated)</label>
+          <input type="text" id="job-skills" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;" placeholder="e.g. JavaScript, React, Node.js">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="job-description" style="display: block; margin-bottom: 6px; font-weight: 500;">Job Description*</label>
+          <textarea id="job-description" required style="width: 100%; min-height: 120px; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px; resize: vertical;"></textarea>
+        </div>
+        
+        <div style="text-align: right; margin-top: 20px;">
+          <button type="button" id="cancel-job" style="padding: var(--button-padding); border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer; margin-right: 8px;">
+            Cancel
+          </button>
+          <button type="submit" style="padding: var(--button-padding); border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">
+            Create Job Listing
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        Brave Talent Match
+      </div>
+      
+      <div class="nav-section">
+        <div class="sidebar-heading">Dashboard</div>
+        <a href="#" id="nav-dashboard" class="nav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
           Dashboard
         </a>
-        <a id="nav-jobs" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'jobs' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i>
-          Job Listings
-        </a>
-        <a id="nav-candidates" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'candidates' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="users" class="w-5 h-5 mr-3"></i>
+        <a href="#" id="nav-candidates" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           Top Candidates
         </a>
-        <a id="nav-applicants" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'applicants' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="clipboard" class="w-5 h-5 mr-3"></i>
-          New Applicants
+        <a href="#" id="nav-shortlisted" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Shortlisted
         </a>
-        <a id="nav-screening" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'screening' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="check-square" class="w-5 h-5 mr-3"></i>
-          Initial Screening
+        <a href="#" id="nav-jobs" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          Job Listings
         </a>
-        <a id="nav-interviews" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'interviews' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
-          Interviews
+        <a href="#" id="nav-ai-assistant" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>
+          AI Assistant
         </a>
-        <a id="nav-offers" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'offers' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="award" class="w-5 h-5 mr-3"></i>
-          Job Offers
-        </a>
-        <a id="nav-analytics" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'analytics' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="bar-chart" class="w-5 h-5 mr-3"></i>
-          Analytics
-        </a>
-        <a id="nav-settings" href="#" 
-           class="flex items-center px-3 py-2 rounded-md text-sm font-medium nav-item"
-           :class="activeSidebar === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'">
-          <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
-          Settings
-        </a>
-      </nav>
-      
-      <div class="p-4 border-t border-border">
-        <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <i data-lucide="building" class="w-5 h-5"></i>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm font-medium">TechCorp Inc.</p>
-            <p class="text-xs text-muted-foreground">Recruiting Team</p>
-          </div>
-        </div>
       </div>
-    </aside>
+    </div>
     
     <!-- Main Content -->
-    <main class="h-screen overflow-auto">
-      <!-- Header -->
-      <header class="bg-card border-b border-border p-4 flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <button class="text-muted-foreground hover:text-foreground">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-          </button>
-          <button class="text-muted-foreground hover:text-foreground">
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
+    <div class="main">
+      <div class="page-header">
+        <h1>Employer Dashboard</h1>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <button id="create-job-button" class="btn-secondary" style="padding: var(--button-padding); border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer; font-weight: 500;">
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">+</span>
+              <span>Create Job Listing</span>
+            </span>
           </button>
         </div>
-        <div class="relative">
-          <input type="text" placeholder="Search candidates..." class="input w-80 pl-10 py-2 rounded-full bg-background text-sm text-foreground border border-border">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-muted-foreground"></i>
-        </div>
-      </header>
-      
-      <!-- Content -->
-      <div class="p-6">
-        <!-- Dashboard Content -->
-        <div id="section-dashboard" class="content-section">
-          <!-- AI Assistant at the top -->
-          <div class="mb-6">
-            <h2 class="text-2xl font-bold mb-6">AI Recruiting Assistant</h2>
+      </div>
+
+      <div class="content-grid">
+        <!-- Content Sections -->
+        <div>
+          <!-- Dashboard Section -->
+          <div id="section-dashboard" class="content-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+              <h1 id="recruiter-greeting" style="margin: 0; font-size: 24px;">Sarah Chen</h1>
+              <span id="company-name" style="font-size: 14px; color: var(--foreground-muted); background-color: var(--background-light); padding: 6px 12px; border-radius: 16px;">Company Name</span>
+            </div>
             
-            <div class="ai-assistant-container">
-              <div class="ai-assistant-header">
-                <div class="ai-assistant-icon">
-                  <i data-lucide="bot" class="w-5 h-5"></i>
+            <h3 style="margin: 0 0 16px 0;">Your Job Postings</h3>
+            <div id="job-postings" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; margin-bottom: 32px;">
+              <!-- Job postings will be populated here -->
+            </div>
+            
+            <h3 style="margin: 0 0 16px 0;">Recruitment Pipeline</h3>
+            
+            <div class="app-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 32px;">
+              <div class="app-card" style="padding: 20px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div class="app-card-header">
+                  <h3 class="app-card-title" style="margin: 0 0 8px 0; font-size: 16px;">Applications</h3>
+                  <div class="app-card-count" style="font-size: 24px; font-weight: 600; color: var(--primary);">25</div>
                 </div>
-                <h3>Talent Match Assistant</h3>
+                <p style="color: var(--foreground-muted); font-size: 14px; margin: 0;">5 new in the last 7 days</p>
               </div>
               
-              <div class="ai-assistant-body flex flex-col" id="ai-chat-messages">
-                <div class="chat-message chat-message-ai">
-                  Hello! I'm your AI recruiting assistant. I can help you find top candidates, analyze applicant qualifications, optimize job postings, and provide hiring insights. How can I assist you today?
+              <div class="app-card" style="padding: 20px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div class="app-card-header">
+                  <h3 class="app-card-title" style="margin: 0 0 8px 0; font-size: 16px;">Interviews</h3>
+                  <div class="app-card-count" style="font-size: 24px; font-weight: 600; color: var(--primary);">4</div>
                 </div>
-                <!-- Messages will be added here -->
+                <p style="color: var(--foreground-muted); font-size: 14px; margin: 0;">1 scheduled, 3 completed</p>
               </div>
               
-              <div class="ai-assistant-footer">
-                <input type="text" id="ai-message-input" class="ai-assistant-input" placeholder="Ask about candidates, skills, or job posting optimization...">
-                <button id="ai-send-btn" class="bg-primary text-white p-2 rounded-full w-10 h-10 flex items-center justify-center" onclick="sendChatMessage()">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send paper-plane">
-                    <path d="m22 2-7 20-4-9-9-4Z"></path>
-                    <path d="M22 2 11 13"></path>
-                  </svg>
-                </button>
+              <div class="app-card" style="padding: 20px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background-light);">
+                <div class="app-card-header">
+                  <h3 class="app-card-title" style="margin: 0 0 8px 0; font-size: 16px;">Shortlisted</h3>
+                  <div id="shortlisted-count" class="app-card-count" style="font-size: 24px; font-weight: 600; color: var(--primary);">0</div>
+                </div>
+                <p style="color: var(--foreground-muted); font-size: 14px; margin: 0;">Candidates ready for review</p>
               </div>
             </div>
             
-            <div class="ai-quick-actions">
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Find top candidates for Senior Developer role</div>
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Analyze skill gaps in applicant pool</div>
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Optimize job posting for better matches</div>
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Show application statistics</div>
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Suggest interview questions</div>
-              <div class="ai-quick-action" onclick="sendQuickAction(this.textContent)">Compare candidate qualifications</div>
-            </div>
-          </div>
-          
-          <!-- Recruitment Workflow - Horizontal -->
-          <div class="mb-6">
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium">Recruitment Pipeline</h3>
-                <span class="text-sm text-muted-foreground">Last updated: April 2, 2023</span>
+            <!-- Recent activity section that replaces Top Candidates on dashboard -->
+            <h3 style="margin: 0 0 16px 0;">Recent Activity</h3>
+            <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background-color: var(--background-light); display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));">
+              <div style="padding: 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: center; gap: 16px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px;"><strong>Emma Richards</strong> applied for <strong>Senior Software Engineer</strong></div>
+                  <div style="font-size: 13px; color: var(--foreground-muted);">Today, 9:45 AM</div>
+                </div>
+                <button style="padding: var(--button-padding); min-width: 100px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer; font-weight: 500;">Review</button>
               </div>
               
-              <div class="flex flex-row gap-4 overflow-x-auto pb-2">
-                <!-- Job Listings Stage -->
-                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('jobs')">
-                  <div class="flex justify-between mb-2">
-                    <h4 class="font-medium">Job Listings</h4>
-                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Open Positions</span>
-                      <span class="text-lg font-medium">12</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Applications</span>
-                      <span class="text-lg font-medium">87</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm text-muted-foreground">Avg. Match Score</span>
-                      <span class="text-lg font-medium">76%</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 pt-3 border-t border-border">
-                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
-                  </div>
+              <div style="padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--success-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
                 </div>
-                
-                <!-- New Applicants Stage -->
-                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('applicants')">
-                  <div class="flex justify-between mb-2">
-                    <h4 class="font-medium">New Applicants</h4>
-                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">42 New</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Total Applicants</span>
-                      <span class="text-lg font-medium">42</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">High Match</span>
-                      <span class="text-lg font-medium">18</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm text-muted-foreground">Need Review</span>
-                      <span class="text-lg font-medium">24</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 pt-3 border-t border-border">
-                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
-                  </div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px;">Interview with <strong>Michael Chen</strong> for <strong>DevOps Engineer</strong> completed</div>
+                  <div style="font-size: 13px; color: var(--foreground-muted);">Yesterday, 2:30 PM</div>
                 </div>
-                
-                <!-- Initial Screening Stage -->
-                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('screening')">
-                  <div class="flex justify-between mb-2">
-                    <h4 class="font-medium">Initial Screening</h4>
-                    <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">In Progress</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">In Screening</span>
-                      <span class="text-lg font-medium">15</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Scheduled</span>
-                      <span class="text-lg font-medium">8</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm text-muted-foreground">Completed</span>
-                      <span class="text-lg font-medium">7</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 pt-3 border-t border-border">
-                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
-                  </div>
+                <button style="padding: var(--button-padding); min-width: 100px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer; font-weight: 500;">View Notes</button>
+              </div>
+              
+              <div style="padding: 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: center; gap: 16px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--warning-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 </div>
-                
-                <!-- Interviews Stage -->
-                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('interviews')">
-                  <div class="flex justify-between mb-2">
-                    <h4 class="font-medium">Interviews</h4>
-                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Scheduled</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">This Week</span>
-                      <span class="text-lg font-medium">9</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Next Round</span>
-                      <span class="text-lg font-medium">6</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm text-muted-foreground">Feedback Pending</span>
-                      <span class="text-lg font-medium">3</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 pt-3 border-t border-border">
-                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
-                  </div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px;">Scheduled interview with <strong>Alex Johnson</strong> for <strong>Senior Software Engineer</strong></div>
+                  <div style="font-size: 13px; color: var(--foreground-muted);">Tomorrow, 11:00 AM</div>
                 </div>
-                
-                <!-- Job Offers Stage -->
-                <div class="min-w-[220px] max-w-[260px] bg-background p-4 rounded-lg border border-border hover:border-primary transition-all cursor-pointer" onclick="showSection('offers')">
-                  <div class="flex justify-between mb-2">
-                    <h4 class="font-medium">Job Offers</h4>
-                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">2 Pending</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Sent</span>
-                      <span class="text-lg font-medium">2</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                      <span class="text-sm text-muted-foreground">Accepted</span>
-                      <span class="text-lg font-medium">3</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm text-muted-foreground">Negotiation</span>
-                      <span class="text-lg font-medium">1</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 pt-3 border-t border-border">
-                    <button class="w-full bg-primary/10 text-primary text-sm py-1 rounded">View Details</button>
-                  </div>
+                <button style="padding: var(--button-padding); min-width: 100px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer; font-weight: 500;">Calendar</button>
+              </div>
+              
+              <div style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                 </div>
+                <div style="flex: 1;">
+                  <div style="font-size: 14px;"><strong>Jennifer Lee</strong> applied for <strong>Data Scientist</strong></div>
+                  <div style="font-size: 13px; color: var(--foreground-muted);">2 days ago</div>
+                </div>
+                <button style="padding: var(--button-padding); min-width: 100px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer; font-weight: 500;">Review</button>
               </div>
             </div>
           </div>
           
-          <!-- Progress Metrics and Top Candidates - Two Column Layout -->
-          <div class="grid grid-cols-2 gap-6">
-            <!-- Progress Metrics -->
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-medium">Recruitment Progress</h3>
-                <div class="flex items-center gap-2">
-                  <span class="text-sm text-muted-foreground">View by:</span>
-                  <select class="px-2 py-1 text-sm rounded border border-border bg-background">
-                    <option>All Positions</option>
-                    <option>Software Engineers</option>
-                    <option>Product Managers</option>
-                    <option>UX Designers</option>
-                  </select>
-                </div>
+          <!-- Top Candidates Section -->
+          <div id="section-candidates" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Top Candidates</h3>
+            
+            <div class="job-filter" style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--background-light);">
+              <div style="margin-bottom: 8px; font-weight: 500;">Filter Candidates</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                <select id="candidates-position-filter" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option value="any">Position: Any</option>
+                  <option value="senior">Senior Developer</option>
+                  <option value="frontend">Frontend Developer</option>
+                  <option value="backend">Backend Engineer</option>
+                  <option value="devops">DevOps Engineer</option>
+                </select>
+                <select id="candidates-experience-filter" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option value="any">Experience: Any</option>
+                  <option value="1-3">1-3 years</option>
+                  <option value="3-5">3-5 years</option>
+                  <option value="5+">5+ years</option>
+                </select>
+                <select id="candidates-score-filter" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option value="any">Match Score: Any</option>
+                  <option value="90">90%+</option>
+                  <option value="80">80%+</option>
+                  <option value="70">70%+</option>
+                </select>
+                <select id="candidates-skills-filter" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option value="any">Skills: Any</option>
+                  <option value="JavaScript">JavaScript</option>
+                  <option value="React">React</option>
+                  <option value="Python">Python</option>
+                  <option value="AWS">AWS</option>
+                </select>
               </div>
               
-              <div>
-                <h4 class="text-sm font-medium mb-3">Applications by Department</h4>
-                <div class="space-y-3 mb-6">
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Engineering</span>
-                      <span>45 applicants</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Product</span>
-                      <span>23 applicants</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-primary h-2 rounded-full" style="width: 35%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Design</span>
-                      <span>19 applicants</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-primary h-2 rounded-full" style="width: 25%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Marketing</span>
-                      <span>12 applicants</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-primary h-2 rounded-full" style="width: 15%"></div>
-                    </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="flex: 1; position: relative;">
+                  <input type="text" id="candidates-ai-filter-input" placeholder="Describe the candidates you're looking for..." style="width: 100%; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--foreground-muted); font-size: 14px; display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   </div>
                 </div>
-                
-                <h4 class="text-sm font-medium mb-3">Time in Pipeline</h4>
-                <div class="space-y-3">
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Senior Software Engineer</span>
-                      <span>18 days avg</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-amber-500 h-2 rounded-full" style="width: 60%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Product Manager</span>
-                      <span>22 days avg</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-amber-500 h-2 rounded-full" style="width: 75%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>UX Designer</span>
-                      <span>15 days avg</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-amber-500 h-2 rounded-full" style="width: 50%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span>Marketing Specialist</span>
-                      <span>12 days avg</span>
-                    </div>
-                    <div class="w-full bg-background rounded-full h-2">
-                      <div class="bg-amber-500 h-2 rounded-full" style="width: 40%"></div>
-                    </div>
-                  </div>
-                </div>
+                <button id="candidates-ai-filter-button" style="padding: var(--button-padding); min-width: 120px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>
+                  AI Filter
+                </button>
               </div>
             </div>
             
-            <!-- Top Candidates -->
-            <div class="bg-card p-6 rounded-lg border border-border">
-              <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium">Top Matches Today</h3>
-                <button class="text-primary text-sm flex items-center gap-1" onclick="showSection('candidates')">
-                  <span>View All</span>
-                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
+            <div class="candidate-cards">
+              <!-- Candidate cards will be populated here -->
+            </div>
+          </div>
+          
+          <!-- Shortlisted Candidates Section -->
+          <div id="section-shortlisted" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Shortlisted Candidates</h3>
+            
+            <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--background-light);">
+              <div style="margin-bottom: 8px; font-weight: 500;">Filter by Job</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                <select id="shortlisted-job-filter" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px;">
+                  <option value="all">All Jobs</option>
+                  <!-- Job options will be populated dynamically -->
+                </select>
               </div>
-              
-              <div class="space-y-3">
-                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-medium">Emma Richards</h4>
-                        <p class="text-xs text-muted-foreground">Senior Software Engineer</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">98% Match</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-medium">Jason Martinez</h4>
-                        <p class="text-xs text-muted-foreground">Frontend Developer</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">95% Match</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-medium">Sarah Kim</h4>
-                        <p class="text-xs text-muted-foreground">Product Manager</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">93% Match</span>
+            </div>
+            
+            <div class="shortlisted-candidates">
+              <!-- Shortlisted candidate cards will be populated here -->
+              <div style="padding: 20px; text-align: center; color: var(--foreground-muted);">No candidates have been shortlisted yet.</div>
+            </div>
+          </div>
+
+          <!-- Jobs Section -->
+          <div id="section-jobs" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">Job Listings</h3>
+            <div id="job-listings-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px;">
+              <!-- Job listings will be populated here -->
+            </div>
+          </div>
+          
+          <!-- AI Assistant Panel -->
+          <div id="section-ai-assistant" class="content-section" style="display: none;">
+            <h3 style="margin-bottom: 16px;">AI Recruiting Assistant</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <!-- Quick actions -->
+              <div class="quick-actions" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                <button class="quick-action" style="background-color: var(--background-light); border: 1px solid var(--border); color: var(--foreground); padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">Find top candidates for Senior Software Engineer</button>
+                <button class="quick-action" style="background-color: var(--background-light); border: 1px solid var(--border); color: var(--foreground); padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">Analyze skill gaps in my applicant pool</button>
+                <button class="quick-action" style="background-color: var(--background-light); border: 1px solid var(--border); color: var(--foreground); padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">Optimize my job posting</button>
+                <button class="quick-action" style="background-color: var(--background-light); border: 1px solid var(--border); color: var(--foreground); padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">Suggest interview questions</button>
+                <button class="quick-action" style="background-color: var(--background-light); border: 1px solid var(--border); color: var(--foreground); padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">Compare candidates</button>
+              </div>
+            
+              <!-- Chat interface -->
+              <div class="ai-assistant-container" style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; min-height: 450px; display: flex; flex-direction: column; background-color: white;">
+                <div id="ai-assistant-messages" class="ai-assistant-messages" style="padding: 16px; flex: 1; overflow-y: auto; min-height: 400px; display: flex; flex-direction: column; gap: 12px;">
+                  <!-- Messages will be populated here -->
+                  <div class="chat-message-container bot-message-container">
+                    <div class="chat-message bot-message" style="max-width: 80%; padding: 12px; border-radius: 8px; font-size: 14px; background-color: var(--background-light); color: var(--foreground); border: 1px solid var(--border);">
+                      <div class="message-content" style="white-space: pre-wrap;">
+                        Hello! I'm your AI recruiting assistant for TechInnovate Solutions. I can help you find top candidates, analyze skill gaps, optimize job postings, and more. What would you like help with today?
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-medium">Alex Johnson</h4>
-                        <p class="text-xs text-muted-foreground">Software Engineer</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">91% Match</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex items-center p-3 bg-background rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-medium">Olivia Chen</h4>
-                        <p class="text-xs text-muted-foreground">UX Designer</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">90% Match</span>
-                      </div>
-                    </div>
-                  </div>
+                <div style="display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background-color: var(--background-light);">
+                  <input type="text" id="ai-assistant-input" class="ai-assistant-input" placeholder="Type your message here..." style="flex: 1; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+                  <button id="ai-assistant-send" class="ai-assistant-send" style="background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 0 16px; cursor: pointer; font-size: 14px; min-width: 80px;">Send</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
-    
-    // Function to show selected section and hide others
-    function showSection(sectionId) {
-      // Hide all content sections
-      document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-      });
-      
-      // Show the selected section
-      document.getElementById('section-' + sectionId).style.display = 'block';
-      
-      // Update active state in navigation
-      document.querySelectorAll('nav a').forEach(link => {
-        link.classList.remove('text-primary', 'font-medium', 'bg-primary/10');
-        link.classList.add('text-muted-foreground');
-      });
-      
-      // Add active state to clicked link
-      event.currentTarget.classList.remove('text-muted-foreground');
-      event.currentTarget.classList.add('text-primary', 'font-medium', 'bg-primary/10');
-    }
-    
-    // Direct chatbot functions without relying on external class
-    function sendChatMessage() {
-      const messageInput = document.getElementById('ai-message-input');
-      const message = messageInput.value.trim();
-      
-      if (message) {
-        // Add user message
-        addUserMessage(message);
-        
-        // Clear input
-        messageInput.value = '';
-        
-        // Show bot response
-        handleBotResponse(message);
+    // Check if there are stored job postings
+    let storedRecruiter = localStorage.getItem('currentRecruiter');
+    const currentRecruiter = storedRecruiter ? JSON.parse(storedRecruiter) : {
+      name: "Sarah Chen",
+      company: "TechInnovate Solutions",
+      role: "Senior Technical Recruiter",
+      avatar: "SC",
+      jobPostings: [
+        {
+          id: "jp1",
+          title: "Senior Software Engineer",
+          department: "Engineering",
+          location: "San Francisco, CA",
+          type: "Full-time",
+          applicants: 47,
+          qualified: 23,
+          interviewed: 8,
+          skills: ["JavaScript", "React", "Node.js", "AWS", "CI/CD"],
+          description: "Looking for an experienced software engineer to lead development of new cloud-based products."
+        },
+        {
+          id: "jp2",
+          title: "DevOps Engineer",
+          department: "Infrastructure",
+          location: "Remote",
+          type: "Full-time",
+          applicants: 31,
+          qualified: 15,
+          interviewed: 6,
+          skills: ["Kubernetes", "Docker", "AWS", "Terraform", "CI/CD"],
+          description: "Seeking a DevOps engineer to improve and maintain our cloud infrastructure and deployment pipelines."
+        },
+        {
+          id: "jp3",
+          title: "Data Scientist",
+          department: "Data",
+          location: "Boston, MA",
+          type: "Full-time",
+          applicants: 28,
+          qualified: 12,
+          interviewed: 5,
+          skills: ["Python", "SQL", "Machine Learning", "Statistics", "Data Visualization"],
+          description: "Join our data team to build predictive models and extract insights from our growing datasets."
+        }
+      ]
+    };
+
+    // Check for stored shortlisted candidates or initialize empty array
+    let shortlistedCandidates = localStorage.getItem('shortlistedCandidates');
+    shortlistedCandidates = shortlistedCandidates ? JSON.parse(shortlistedCandidates) : [];
+
+    // Sample candidate data
+    const candidates = [
+      {
+        id: "c1",
+        name: "Emma Richards",
+        position: "Senior Software Engineer",
+        experience: "6 years",
+        match: 94,
+        skills: ["JavaScript", "React", "Node.js", "AWS", "System Design"],
+        description: "Full-stack developer specializing in React and Node.js with extensive AWS experience."
+      },
+      {
+        id: "c2",
+        name: "Alex Johnson",
+        position: "Frontend Developer",
+        experience: "7 years",
+        match: 88,
+        skills: ["JavaScript", "React", "Vue.js", "CSS/SASS", "Testing"],
+        description: "Frontend specialist with strong UI/UX skills and experience leading development teams."
+      },
+      {
+        id: "c3",
+        name: "Sarah Miller",
+        position: "Backend Engineer",
+        experience: "5 years",
+        match: 85,
+        skills: ["Python", "Django", "PostgreSQL", "API Design", "Docker"],
+        description: "Backend developer focusing on scalable APIs and database optimization."
+      },
+      {
+        id: "c4",
+        name: "David Thompson",
+        position: "Frontend Developer",
+        experience: "4 years",
+        match: 79,
+        skills: ["JavaScript", "React", "TypeScript", "GraphQL", "Webpack"],
+        description: "Frontend developer with expertise in modern JavaScript frameworks and TypeScript."
+      },
+      {
+        id: "c5",
+        name: "Michael Chen",
+        position: "DevOps Engineer",
+        experience: "6 years",
+        match: 82,
+        skills: ["Kubernetes", "Docker", "AWS", "Terraform", "CI/CD"],
+        description: "DevOps specialist with experience building and maintaining cloud infrastructure."
+      },
+      {
+        id: "c6",
+        name: "Sophia Patel",
+        position: "Senior Machine Learning Engineer",
+        experience: "8 years",
+        match: 92,
+        skills: ["Python", "TensorFlow", "PyTorch", "Computer Vision", "NLP"],
+        description: "ML specialist with expertise in deep learning and computer vision applications."
+      },
+      {
+        id: "c7",
+        name: "James Wilson",
+        position: "Data Scientist",
+        experience: "5 years",
+        match: 89,
+        skills: ["Python", "R", "SQL", "Data Visualization", "Statistical Analysis"],
+        description: "Data scientist with strong background in statistical methods and predictive modeling."
+      },
+      {
+        id: "c8",
+        name: "Olivia Martinez",
+        position: "Machine Learning Engineer",
+        experience: "4 years",
+        match: 86,
+        skills: ["Python", "Scikit-learn", "Keras", "Data Mining", "MLOps"],
+        description: "Machine learning engineer specializing in predictive analytics and model deployment."
+      },
+      {
+        id: "c9",
+        name: "Daniel Kim",
+        position: "Senior Data Engineer",
+        experience: "7 years",
+        match: 84,
+        skills: ["Python", "Spark", "Hadoop", "AWS", "ETL Pipelines"],
+        description: "Data engineer with expertise in building scalable data pipelines and warehouses."
+      },
+      {
+        id: "c10",
+        name: "Ethan Williams",
+        position: "AI Research Scientist",
+        experience: "9 years",
+        match: 95,
+        skills: ["Python", "Deep Learning", "Reinforcement Learning", "Research", "TensorFlow"],
+        description: "PhD in Machine Learning with publications in top conferences and practical industry experience."
+      },
+      {
+        id: "c11",
+        name: "Ava Robinson",
+        position: "Natural Language Processing Engineer",
+        experience: "6 years",
+        match: 91,
+        skills: ["Python", "NLP", "BERT", "Transformers", "Sentiment Analysis"],
+        description: "NLP specialist with experience developing language understanding systems for enterprise applications."
+      },
+      {
+        id: "c12",
+        name: "Lucas Garcia",
+        position: "Computer Vision Engineer",
+        experience: "5 years",
+        match: 88,
+        skills: ["Python", "OpenCV", "PyTorch", "Object Detection", "Image Segmentation"],
+        description: "Computer vision engineer with expertise in real-time object detection and tracking systems."
       }
-    }
-    
-    function sendQuickAction(message) {
-      if (message) {
-        // Add user message
-        addUserMessage(message);
-        
-        // Show bot response
-        handleBotResponse(message);
-      }
-    }
-    
-    function addUserMessage(message) {
-      const chatMessages = document.getElementById('ai-chat-messages');
-      const messageElement = document.createElement('div');
-      messageElement.className = 'chat-message chat-message-user';
-      messageElement.textContent = message;
-      chatMessages.appendChild(messageElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    function addBotMessage(message) {
-      const chatMessages = document.getElementById('ai-chat-messages');
-      const messageElement = document.createElement('div');
-      messageElement.className = 'chat-message chat-message-ai';
-      messageElement.innerHTML = message;
-      chatMessages.appendChild(messageElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    function showLoading() {
-      const chatMessages = document.getElementById('ai-chat-messages');
-      const loadingElement = document.createElement('div');
-      loadingElement.className = 'chat-message chat-message-ai loading';
-      loadingElement.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-      chatMessages.appendChild(loadingElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      return loadingElement;
-    }
-    
-    function handleBotResponse(message) {
-      // Show loading indicator
-      const loadingElement = showLoading();
-      
-      // Process after a slight delay to simulate thinking
-      setTimeout(() => {
-        // Remove loading indicator
-        loadingElement.remove();
-        
-        // Define keywords for better matching
-        const keywords = {
-          candidates: ["candidate", "applicant", "talent", "developer", "engineer", "senior", "junior", "hire", "profile", "resume", "cv"],
-          skills: ["skill", "gap", "expertise", "knowledge", "experience", "qualification", "proficiency", "competency"],
-          interview: ["interview", "question", "assessment", "evaluation", "screening", "ask", "query"],
-          posting: ["posting", "job", "description", "listing", "position", "opening", "post", "optimize", "improve"],
-          statistics: ["statistics", "stats", "data", "metrics", "numbers", "figure", "report"],
-          compare: ["compare", "comparison", "versus", "vs", "qualification", "better", "stronger", "weaker", "match"]
-        };
-        
-        // Define candidate database for detailed responses
-        const candidates = {
-          "alex johnson": {
-            name: "Alex Johnson",
-            position: "Senior Software Engineer",
-            match: 98,
-            skills: ["JavaScript", "React", "Node.js", "TypeScript", "AWS"],
-            experience: "7 years",
-            education: "BS Computer Science, Stanford University",
-            strengths: ["Frontend architecture", "Performance optimization", "Team leadership"],
-            projects: ["Led a team of 5 engineers in redesigning the company's dashboard", "Reduced load time by 65%"],
-            availability: "Immediate",
-            whyTopMatch: "Alex is our top match because of his extensive experience with the exact tech stack we're using (React/Node.js), proven leadership abilities, and exceptional performance optimization skills that directly align with our current project needs.",
-            detailedReasoning: [
-              "Perfect tech stack alignment with our project requirements (React/Node.js/TypeScript)",
-              "7 years of relevant experience, including 3 years in a senior role",
-              "Proven track record of leadership (led team of 5 engineers)",
-              "Demonstrated measurable results (65% performance improvement)",
-              "Immediate availability which matches our urgent timeline"
-            ]
-          },
-          "sarah miller": {
-            name: "Sarah Miller",
-            position: "Senior Software Engineer",
-            match: 95,
-            skills: ["Python", "Django", "AWS", "Docker", "Kubernetes"],
-            experience: "6 years",
-            education: "MS Computer Engineering, MIT",
-            strengths: ["Cloud infrastructure", "Scalable systems", "CI/CD pipelines"],
-            projects: ["Architected microservices platform serving millions of users", "Implemented automated deployment pipeline"],
-            availability: "2 weeks notice",
-            whyTopMatch: "Sarah is highly ranked due to her expertise in cloud systems and scalable architecture. Her experience with AWS and containerization makes her ideal for our backend infrastructure needs.",
-            detailedReasoning: [
-              "Strong background in cloud systems (AWS) which is critical for our infrastructure migration",
-              "Experience with containerization (Docker, Kubernetes) matching our deployment strategy",
-              "Proven success with high-scale systems (platform serving millions of users)",
-              "Background in automation that will improve our deployment efficiency",
-              "Advanced degree (MS Computer Engineering) providing theoretical depth for architecture decisions"
-            ]
-          },
-          "david thompson": {
-            name: "David Thompson",
-            position: "Senior Software Engineer",
-            match: 92,
-            skills: ["Java", "Spring", "Microservices", "Oracle", "Kafka"],
-            experience: "8 years",
-            education: "BS Software Engineering, UC Berkeley",
-            strengths: ["Enterprise architecture", "Distributed systems", "Data integration"],
-            projects: ["Designed fault-tolerant payment processing system", "Led integration with 12 third-party services"],
-            availability: "1 month notice",
-            whyTopMatch: "David stands out for his extensive enterprise architecture experience and expertise with mission-critical systems. His work with high-volume data processing aligns with our transaction platform needs.",
-            detailedReasoning: [
-              "Most experienced candidate (8 years) with significant enterprise background",
-              "Expertise in mission-critical systems design (payment processing)",
-              "Strong background in integrations (12 third-party services) relevant to our product",
-              "Experience with Kafka for data streaming which we're implementing",
-              "Deep knowledge of distributed systems that will benefit our microservices architecture"
-            ]
-          },
-          "emma richards": {
-            name: "Emma Richards",
-            position: "Senior Software Engineer",
-            match: 98,
-            skills: ["React", "Node.js", "GraphQL", "Redux", "Testing"],
-            experience: "5 years",
-            education: "MS Computer Science, Georgia Tech",
-            strengths: ["Frontend architecture", "API design", "Testing strategies"],
-            projects: ["Built GraphQL API serving mobile and web clients", "Implemented comprehensive test automation"],
-            availability: "3 weeks notice",
-            whyTopMatch: "Emma is our top match due to her specialized expertise in GraphQL and modern React patterns. Her testing background is particularly valuable for our quality-focused development culture.",
-            detailedReasoning: [
-              "Expert in GraphQL which is central to our API modernization initiative",
-              "Strong testing focus matching our commitment to quality (implemented test automation)",
-              "Experience with both mobile and web clients aligning with our multi-platform strategy",
-              "Advanced degree with specialization in distributed systems relevant to our architecture",
-              "Recent hands-on experience with modern React patterns we're adopting"
-            ]
-          },
-          "jason martinez": {
-            name: "Jason Martinez",
-            position: "Frontend Developer",
-            match: 95,
-            skills: ["JavaScript", "React", "CSS/SASS", "Webpack", "UI/UX"],
-            experience: "4 years",
-            education: "BA Design & Computer Science, NYU",
-            strengths: ["UI component systems", "Responsive design", "Performance"],
-            projects: ["Created design system used across 15 products", "Optimized rendering performance in high-load interfaces"],
-            availability: "2 weeks notice",
-            whyTopMatch: "Jason is highly ranked for his unique combination of technical and design skills. His experience building component libraries directly aligns with our UI modernization initiative.",
-            detailedReasoning: [
-              "Unique dual expertise in both design and development, perfect for our design system project",
-              "Previous success creating a design system (used across 15 products)",
-              "Performance optimization experience with high-load interfaces matching our UX requirements",
-              "Strong foundation in modern front-end tooling (React, Webpack, SASS) that we use",
-              "Educational background combining design and CS provides the interdisciplinary skills we need"
-            ]
-          }
-        };
-        
-        // Normalize message for better matching
-        const normalizedMsg = message.toLowerCase();
-        
-        // Check for specific candidate questions
-        const candidateNames = Object.keys(candidates);
-        let specificCandidate = null;
-        
-        for (const name of candidateNames) {
-          if (normalizedMsg.includes(name)) {
-            specificCandidate = name;
-            break;
-          }
-        }
-        
-        // Handle "why" questions about candidates
-        if (specificCandidate && (normalizedMsg.includes("why") || normalizedMsg.includes("reason") || 
-            normalizedMsg.includes("qualified") || normalizedMsg.includes("good fit") || 
-            normalizedMsg.includes("match") || normalizedMsg.includes("suitable"))) {
-          
-          const candidate = candidates[specificCandidate];
-          
-          // Use the new candidate card styling
-          response = `<div class="candidate-card">
-            <div class="candidate-header">
-              <span class="candidate-name">${candidate.name}</span>
-              <span class="candidate-match">${candidate.match}% Match</span>
-            </div>
-            
-            <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
-            
-            <div class="candidate-skill-list">
-              ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
-            </div>
-            
-            <div class="candidate-reason">
-              ${candidate.whyTopMatch}
-            </div>
-            
-            <div class="candidate-section">
-              <div class="candidate-section-title">Why This Candidate Stands Out:</div>
-              <ul style="padding-left: 16px; margin-top: 4px;">
-                ${candidate.detailedReasoning.map(reason => `<li>${reason}</li>`).join('')}
-              </ul>
-            </div>
-            
-            <div class="candidate-section">
-              <div class="candidate-section-title">Notable Achievements:</div>
-              <ul style="padding-left: 16px; margin-top: 4px;">
-                ${candidate.projects.map(project => `<li>${project}</li>`).join('')}
-              </ul>
-            </div>
-          </div>`;
-          
-          addBotMessage(response);
-          return;
-        }
-        
-        // Handle detailed profile requests
-        if (specificCandidate && (normalizedMsg.includes("profile") || normalizedMsg.includes("details") || 
-            normalizedMsg.includes("about") || normalizedMsg.includes("info"))) {
-          
-          const candidate = candidates[specificCandidate];
-          
-          // Use the new candidate card styling
-          response = `<div class="candidate-card">
-            <div class="candidate-header">
-              <span class="candidate-name">${candidate.name}</span>
-              <span class="candidate-match">${candidate.match}% Match</span>
-            </div>
-            
-            <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
-            
-            <div class="candidate-skill-list">
-              ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
-            </div>
-            
-            <div class="candidate-section">
-              <div class="candidate-section-title">Background</div>
-              <div class="candidate-detail"><b>Education:</b> ${candidate.education}</div>
-              <div class="candidate-detail"><b>Availability:</b> ${candidate.availability}</div>
-            </div>
-            
-            <div class="candidate-section">
-              <div class="candidate-section-title">Key Strengths</div>
-              <ul style="padding-left: 16px; margin-top: 4px;">
-                ${candidate.strengths.map(strength => `<li>${strength}</li>`).join('')}
-              </ul>
-            </div>
-            
-            <div class="candidate-section">
-              <div class="candidate-section-title">Notable Projects</div>
-              <ul style="padding-left: 16px; margin-top: 4px;">
-                ${candidate.projects.map(project => `<li>${project}</li>`).join('')}
-              </ul>
-            </div>
-          </div>`;
-          
-          addBotMessage(response);
-          return;
-        }
-        
-        // Check which category the message falls into
-        let matchedCategory = null;
-        
-        // Check for category matches
-        for (const [category, categoryKeywords] of Object.entries(keywords)) {
-          if (categoryKeywords.some(keyword => normalizedMsg.includes(keyword))) {
-            matchedCategory = category;
-            break;
-          }
-        }
-        
-        // Generate responses based on category
-        let response;
-        
-        switch (matchedCategory) {
-          case "candidates":
-            // Handle general questions about top candidates
-            if (normalizedMsg.includes("top") || normalizedMsg.includes("best")) {
-              // Create a more structured response with the new styling
-              const topCandidates = ["emma richards", "alex johnson", "sarah miller"];
-              let candidatesHtml = '';
-              
-              for (const name of topCandidates) {
-                const candidate = candidates[name];
-                candidatesHtml += `<div class="candidate-card">
-                  <div class="candidate-header">
-                    <span class="candidate-name">${candidate.name}</span>
-                    <span class="candidate-match">${candidate.match}% Match</span>
-                  </div>
-                  
-                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
-                  
-                  <div class="candidate-skill-list">
-                    ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
-                  </div>
-                  
-                  <div class="candidate-reason">
-                    ${candidate.whyTopMatch}
-                  </div>
-                </div>`;
-              }
-              
-              response = `<div>
-                <p>Here are our top 3 candidates for the Senior Developer role:</p>
-                ${candidatesHtml}
-                <p style="margin-top: 12px;">Would you like more details about any of these candidates?</p>
-              </div>`;
-            } else if (normalizedMsg.includes("why") && normalizedMsg.includes("top")) {
-              // General explanation about what makes candidates top matches
-              response = `<div>
-                <p>Our top candidates are selected based on several factors:</p>
-                
-                <div style="background-color: var(--accent); padding: 12px; border-radius: 8px; margin: 12px 0;">
-                  <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">Key Selection Criteria:</div>
-                  <ol style="padding-left: 20px; margin: 0;">
-                    <li><b>Skills alignment</b> with the specific job requirements (80%)</li>
-                    <li><b>Experience level</b> and relevance to the position (75%)</li>
-                    <li><b>Project history</b> showing success in similar roles (65%)</li>
-                    <li><b>Technical assessment scores</b> from our evaluation process (90%)</li>
-                    <li><b>Cultural fit indicators</b> from our preliminary screening (85%)</li>
-                  </ol>
-                </div>
-                
-                <p>Each candidate receives a match percentage based on a weighted score of these factors. Would you like specific details about why a particular candidate is ranked highly?</p>
-              </div>`;
-            } else {
-              // Create a more structured response with the new styling
-              const topCandidates = ["emma richards", "alex johnson", "sarah miller", "david thompson"];
-              let candidatesHtml = '';
-              
-              for (const name of topCandidates) {
-                const candidate = candidates[name];
-                candidatesHtml += `<div class="candidate-card">
-                  <div class="candidate-header">
-                    <span class="candidate-name">${candidate.name}</span>
-                    <span class="candidate-match">${candidate.match}% Match</span>
-                  </div>
-                  
-                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
-                  
-                  <div class="candidate-skill-list">
-                    ${candidate.skills.slice(0, 3).map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
-                  </div>
-                </div>`;
-              }
-              
-              response = `<div>
-                <p>Here are the top candidates for the Senior Developer role:</p>
-                ${candidatesHtml}
-                <p style="margin-top: 12px;">To learn more about why a specific candidate is a top match, ask "Why is [candidate name] a top match?"</p>
-              </div>`;
-            }
-            break;
-          
-          case "skills":
-            response = "Based on your job requirements and current applicant pool, here are the skill gaps:<br><br>" +
-              "- <b>Kubernetes experience</b>: Only 12% of applicants have this skill<br>" +
-              "- <b>GraphQL</b>: Only 18% of applicants have this skill<br>" +
-              "- <b>System Architecture</b>: Only 25% of applicants meet your requirements<br><br>" +
-              "Consider modifying your job posting to emphasize these skills or adjusting your requirements.";
-            break;
-          
-          case "interview":
-            response = "Here are some suggested technical interview questions for a Senior Developer:<br><br>" +
-              "1. How would you design a system that processes millions of events per day?<br>" +
-              "2. Describe your approach to refactoring legacy code.<br>" +
-              "3. How do you ensure code quality and maintainability in large projects?<br>" +
-              "4. Explain your experience with microservices architecture.<br>" +
-              "5. How would you handle a critical production issue?";
-            break;
-          
-          case "posting":
-            response = "Based on my analysis, here's how you could optimize your job posting:<br><br>" +
-              "1. <b>Be more specific</b> about required technologies<br>" +
-              "2. <b>Highlight remote work options</b> more prominently<br>" +
-              "3. <b>Include salary range</b> to attract qualified candidates<br>" +
-              "4. <b>Mention career growth</b> opportunities<br>" +
-              "5. <b>Simplify the skills section</b> to focus on must-haves vs. nice-to-haves";
-            break;
-          
-          case "statistics":
-            response = "Here are your current application statistics:<br><br>" +
-              "<b>Total Applications:</b> 247<br>" +
-              "<b>Qualified Candidates:</b> 68 (27.5%)<br>" +
-              "<b>High Match Score (>90%):</b> 23 (9.3%)<br>" +
-              "<b>Average Experience:</b> 4.2 years<br>" +
-              "<b>Application Sources:</b> LinkedIn (42%), Indeed (28%), Direct (30%)";
-            break;
-          
-          case "compare":
-            response = "Here's a comparison of your top candidates for the Senior Developer role:<br><br>" +
-              "<b>Alex Johnson vs. Sarah Miller</b><br>" +
-              "- Alex has stronger frontend experience (React, Angular)<br>" +
-              "- Sarah has better cloud expertise (AWS, Azure)<br>" +
-              "- Both have comparable years of experience<br>" +
-              "- Alex is available immediately, Sarah has a 2-week notice<br><br>" +
-              "Based on your requirements, Alex might be a better fit for the role.";
-            break;
-          
-          default:
-            // If no specific category is matched, provide a more intelligent fallback
-            if (normalizedMsg.includes("top") && normalizedMsg.includes("senior") && normalizedMsg.includes("dev")) {
-              // Create a more structured response with the new styling
-              const topCandidates = ["emma richards", "alex johnson", "sarah miller"];
-              let candidatesHtml = '';
-              
-              for (const name of topCandidates) {
-                const candidate = candidates[name];
-                candidatesHtml += `<div class="candidate-card">
-                  <div class="candidate-header">
-                    <span class="candidate-name">${candidate.name}</span>
-                    <span class="candidate-match">${candidate.match}% Match</span>
-                  </div>
-                  
-                  <div class="candidate-detail">${candidate.position} • ${candidate.experience} experience</div>
-                  
-                  <div class="candidate-skill-list">
-                    ${candidate.skills.map(skill => `<span class="candidate-skill">${skill}</span>`).join('')}
-                  </div>
-                  
-                  <div class="candidate-reason">
-                    ${candidate.whyTopMatch}
-                  </div>
-                </div>`;
-              }
-              
-              response = `<div>
-                <p>Here are our top candidates for the Senior Developer role:</p>
-                ${candidatesHtml}
-                <p style="margin-top: 12px;">Would you like more details about why any of these candidates are top matches?</p>
-              </div>`;
-            } else if (normalizedMsg.includes("why") && (normalizedMsg.includes("candidate") || normalizedMsg.includes("match"))) {
-              // Create a more structured explanation of matching criteria
-              response = `<div>
-                <p>Our matching algorithm evaluates candidates based on several factors:</p>
-                
-                <div style="background-color: var(--accent); padding: 12px; border-radius: 8px; margin: 12px 0;">
-                  <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">Key Matching Criteria:</div>
-                  <ol style="padding-left: 20px; margin: 0;">
-                    <li><b>Skills alignment</b> with the specific job requirements</li>
-                    <li><b>Experience level</b> and relevance to the position</li>
-                    <li><b>Project history</b> showing success in similar roles</li>
-                    <li><b>Technical assessment scores</b> from our evaluation process</li>
-                  </ol>
-                </div>
-                
-                <p>Would you like details about a specific candidate, such as Emma Richards or Alex Johnson?</p>
-              </div>`;
-            } else {
-              // Try to extract potential topics from the query
-              const query = normalizedMsg.split(' ').filter(word => word.length > 3);
-              response = "I'll help you with that. Based on your question about ";
-              
-              if (query.length > 0) {
-                // Extract a subject from the query if possible
-                const subject = query.find(word => word.length > 4) || query[0];
-                response += `<b>${subject}</b>, here's what I can tell you:<br><br>`;
-                
-                if (normalizedMsg.includes("how") || normalizedMsg.includes("what")) {
-                  response += "Our system currently tracks data across the entire recruitment pipeline, from job listings to offers. ";
-                  response += "I can help with specific insights about candidates, skills, roles, or metrics if you provide more details.";
-                } else {
-                  response += "I can provide detailed information about our recruitment process, candidate profiles, skill assessments, and hiring metrics. ";
-                  response += "Would you like me to focus on a specific aspect like top candidates, skill gaps, or application statistics?";
-                }
-              } else {
-                response = "I'd be happy to help. Could you provide more details about what specific recruitment information you're looking for?";
-              }
-            }
-        }
-        
-        // Add AI message to chat
-        addBotMessage(response);
-      }, 1000);
-    }
-    
-    // Add event listener for Enter key on input field
+    ];
+
+    // Navigation handling
     document.addEventListener('DOMContentLoaded', function() {
+      // Initial page setup
       showSection('dashboard');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set personalized recruiter information
+      document.getElementById('recruiter-greeting').textContent = currentRecruiter.name;
+      document.getElementById('company-name').textContent = currentRecruiter.company;
       
-      // Add event listener for Enter key
-      const messageInput = document.getElementById('ai-message-input');
-      messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          sendChatMessage();
+      // Render job postings
+      renderJobPostings();
+      
+      // Render candidate cards
+      renderCandidateCards(candidates);
+      
+      // Update shortlisted count
+      updateShortlistedCount();
+      
+      // Add change event listener to shortlisted job filter
+      document.getElementById('shortlisted-job-filter').addEventListener('change', function() {
+        renderShortlistedCandidates();
+      });
+
+      // Remove old navigation handlers and use the showSection function
+      // Navigation click handlers
+      document.getElementById('nav-dashboard').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection('dashboard');
+      });
+      
+      document.getElementById('nav-candidates').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection('candidates');
+      });
+      
+      document.getElementById('nav-shortlisted').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection('shortlisted');
+        renderShortlistedCandidates();
+      });
+      
+      document.getElementById('nav-jobs').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection('jobs');
+      });
+      
+      document.getElementById('nav-ai-assistant').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection('ai-assistant');
+      });
+
+      // Initialize AI Assistant
+      const aiAssistantInput = document.getElementById('ai-assistant-input');
+      const aiAssistantSend = document.getElementById('ai-assistant-send');
+      const aiAssistantMessages = document.getElementById('ai-assistant-messages');
+      
+      // Send message function
+      function sendMessage() {
+        const message = aiAssistantInput.value.trim();
+        if (message) {
+          // Add user message
+          addMessage(message, 'user');
+          
+          // Clear input
+          aiAssistantInput.value = '';
+          
+          // Simulate AI response
+          setTimeout(() => {
+            let response;
+            
+            if (message.toLowerCase().includes('top candidates') || message.toLowerCase().includes('find candidate')) {
+              response = `Based on your job postings, here are the top candidates for Senior Software Engineer:\n\n1. Emma Richards - 94% match\n2. Alex Johnson - 88% match\n3. Sarah Miller - 85% match\n\nWould you like me to arrange interviews with any of these candidates?`;
+            } else if (message.toLowerCase().includes('skill gap') || message.toLowerCase().includes('skills')) {
+              response = `I've analyzed your current applicant pool for the Senior Software Engineer position. Here are the skill gaps I've identified:\n\n- Strong AWS expertise (only 40% of applicants)\n- CI/CD experience (only 35% of applicants)\n- React Native (only 15% of applicants)\n\nWould you like me to suggest some sourcing strategies to find candidates with these skills?`;
+            } else if (message.toLowerCase().includes('optimize') || message.toLowerCase().includes('job posting')) {
+              response = `I've reviewed your Senior Software Engineer job posting. Here are some optimization suggestions:\n\n1. Add more specific details about the tech stack\n2. Highlight remote work flexibility more prominently\n3. Include salary range to attract more qualified candidates\n4. Emphasize growth opportunities within your engineering team\n\nWould you like me to draft these changes for you?`;
+            } else if (message.toLowerCase().includes('interview') || message.toLowerCase().includes('question')) {
+              response = `Here are some technical interview questions for Senior Software Engineer candidates:\n\n1. "Describe how you've used React hooks in a complex application"\n2. "Explain your approach to setting up CI/CD pipelines"\n3. "How would you design a scalable backend service on AWS?"\n4. "Tell me about a performance optimization you implemented"\n\nWould you like more specific questions for any area?`;
+            } else if (message.toLowerCase().includes('compare') || message.toLowerCase().includes('candidate')) {
+              response = `Comparing Emma Richards and Alex Johnson for the Senior Software Engineer role:\n\nEmma Richards:\n- Stronger in: React, AWS, system design\n- 6 years experience\n- Led team of 5 developers\n\nAlex Johnson:\n- Stronger in: Node.js, CI/CD, testing\n- 7 years experience\n- Worked in similar industry\n\nEmma would be better for frontend-focused work, while Alex has more backend expertise.`;
+            } else {
+              response = `I'm here to help with your recruiting needs! I can help you find top candidates, analyze skill gaps, optimize job postings, suggest interview questions, and compare candidates. What specific assistance do you need today?`;
+            }
+            
+            addMessage(response, 'bot');
+          }, 1000);
         }
+      }
+      
+      // Add message to chat
+      function addMessage(message, sender) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `chat-message-container ${sender}-message-container`;
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `chat-message ${sender}-message`;
+        messageEl.style.maxWidth = '80%';
+        messageEl.style.padding = '12px';
+        messageEl.style.borderRadius = '8px';
+        messageEl.style.fontSize = '14px';
+        
+        if (sender === 'bot') {
+          messageEl.style.backgroundColor = 'var(--background-light)';
+          messageEl.style.color = 'var(--foreground)';
+          messageEl.style.border = '1px solid var(--border)';
+        } else {
+          messageEl.style.backgroundColor = 'var(--primary)';
+          messageEl.style.color = 'white';
+          messageEl.style.marginLeft = 'auto';
+        }
+        
+        const contentEl = document.createElement('div');
+        contentEl.className = 'message-content';
+        contentEl.style.whiteSpace = 'pre-wrap';
+        contentEl.textContent = message;
+        
+        messageEl.appendChild(contentEl);
+        messageContainer.appendChild(messageEl);
+        aiAssistantMessages.appendChild(messageContainer);
+        
+        // Scroll to bottom
+        aiAssistantMessages.scrollTop = aiAssistantMessages.scrollHeight;
+      }
+      
+      // Event listeners
+      aiAssistantSend.addEventListener('click', sendMessage);
+      aiAssistantInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+      
+      // Quick action buttons
+      document.querySelectorAll('.quick-action').forEach(button => {
+        button.addEventListener('click', function() {
+          aiAssistantInput.value = this.textContent;
+          sendMessage();
+        });
+      });
+
+      // Candidate filtering
+      document.getElementById('candidates-position-filter').addEventListener('change', function() {
+        applyFilters();
+      });
+      
+      document.getElementById('candidates-experience-filter').addEventListener('change', function() {
+        applyFilters();
+      });
+      
+      document.getElementById('candidates-score-filter').addEventListener('change', function() {
+        applyFilters();
+      });
+      
+      document.getElementById('candidates-skills-filter').addEventListener('change', function() {
+        applyFilters();
+      });
+      
+      document.getElementById('candidates-ai-filter-button').addEventListener('click', function() {
+        applyAIFilter();
+      });
+
+      // Job posting rendering function
+      function renderJobPostings() {
+        const dashboardJobPostingsContainer = document.getElementById('job-postings');
+        dashboardJobPostingsContainer.innerHTML = '';
+        
+        const jobListingsContainer = document.getElementById('job-listings-container');
+        if (jobListingsContainer) {
+          jobListingsContainer.innerHTML = '';
+        }
+        
+        currentRecruiter.jobPostings.forEach(job => {
+          // Create job card for dashboard
+          const jobCard = document.createElement('div');
+          jobCard.style.backgroundColor = 'var(--background)';
+          jobCard.style.borderRadius = '8px';
+          jobCard.style.border = '1px solid var(--border)';
+          jobCard.style.padding = '20px';
+          jobCard.style.marginBottom = '16px';
+          
+          jobCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+              <div>
+                <h3 style="margin: 0 0 8px 0; font-size: 18px;">${job.title}</h3>
+                <div style="font-size: 14px; color: var(--foreground-muted); margin-bottom: 4px;">${job.department} · ${job.location}</div>
+                <div style="font-size: 14px; color: var(--foreground-muted);">${job.type}</div>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px;">
+              ${job.skills.map(skill => 
+                `<span style="background-color: var(--background-light); border-radius: 12px; padding: 4px 10px; font-size: 12px;">${skill}</span>`
+              ).join('')}
+            </div>
+            
+            <p style="font-size: 14px; margin: 0 0 16px 0; line-height: 1.5;">${job.description}</p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px;">
+              <div style="display: flex; gap: 16px;">
+                <div>
+                  <div style="font-size: 12px; color: var(--foreground-muted); margin-bottom: 4px;">Applicants</div>
+                  <div style="font-weight: 600;">${job.applicants}</div>
+                </div>
+                <div>
+                  <div style="font-size: 12px; color: var(--foreground-muted); margin-bottom: 4px;">Qualified</div>
+                  <div style="font-weight: 600;">${job.qualified}</div>
+                </div>
+                <div>
+                  <div style="font-size: 12px; color: var(--foreground-muted); margin-bottom: 4px;">Interviewed</div>
+                  <div style="font-weight: 600;">${job.interviewed}</div>
+                </div>
+              </div>
+              
+              <button style="padding: var(--button-padding); min-width: 100px; border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer; font-weight: 500;">View Candidates</button>
+            </div>
+          `;
+          
+          dashboardJobPostingsContainer.appendChild(jobCard);
+          
+          // Create job card for jobs section if container exists
+          if (jobListingsContainer) {
+            const jobListingCard = jobCard.cloneNode(true);
+            jobListingsContainer.appendChild(jobListingCard);
+          }
+        });
+      }
+
+      // Function to render candidate cards
+      function renderCandidateCards(candidatesToRender) {
+        const candidateCardsContainer = document.querySelector('.candidate-cards');
+        candidateCardsContainer.innerHTML = '';
+        
+        if (candidatesToRender.length === 0) {
+          candidateCardsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--foreground-muted);">No candidates match your filters.</div>';
+          return;
+        }
+        
+        candidatesToRender.forEach(candidate => {
+          const candidateCard = document.createElement('div');
+          candidateCard.className = 'candidate-card';
+          
+          // Check if candidate is already shortlisted
+          const isShortlisted = shortlistedCandidates.some(c => c.id === candidate.id);
+          
+          candidateCard.innerHTML = `
+            <div class="candidate-card-header">
+              <h3 class="candidate-card-title">${candidate.name}</h3>
+              <div class="match-percentage">${candidate.match}% Match</div>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 14px; color: var(--foreground-muted); margin-bottom: 4px;">${candidate.position}</div>
+              <div style="font-size: 14px; color: var(--foreground-muted);">${candidate.experience} experience</div>
+            </div>
+            
+            <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px;">
+              ${candidate.skills.map(skill => 
+                `<span style="background-color: var(--background-light); border-radius: 12px; padding: 4px 10px; font-size: 12px;">${skill}</span>`
+              ).join('')}
+            </div>
+            
+            <p style="font-size: 14px; margin: 0 0 16px 0;">${candidate.description}</p>
+            
+            <div style="display: flex; gap: 8px;">
+              <button style="flex: 1; padding: var(--button-padding); border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Contact</button>
+              <button data-candidate-id="${candidate.id}" class="shortlist-btn" style="flex: 1; padding: var(--button-padding); border-radius: 6px; border: 1px solid ${isShortlisted ? 'var(--success)' : 'var(--border)'}; background-color: ${isShortlisted ? 'var(--success-light)' : 'var(--background)'}; color: ${isShortlisted ? 'var(--success)' : 'var(--foreground)'}; font-size: 14px; cursor: pointer;">
+                ${isShortlisted ? 'Shortlisted ✓' : 'Shortlist'}
+              </button>
+            </div>
+          `;
+          
+          candidateCardsContainer.appendChild(candidateCard);
+        });
+        
+        // Add event listeners to shortlist buttons
+        document.querySelectorAll('.shortlist-btn').forEach(button => {
+          button.addEventListener('click', function() {
+            const candidateId = this.getAttribute('data-candidate-id');
+            toggleShortlist(candidateId, this);
+          });
+        });
+      }
+      
+      // Function to toggle shortlisting a candidate
+      function toggleShortlist(candidateId, buttonElement) {
+        const candidate = candidates.find(c => c.id === candidateId);
+        const isAlreadyShortlisted = shortlistedCandidates.some(c => c.id === candidateId);
+        
+        if (isAlreadyShortlisted) {
+          // Remove from shortlist
+          shortlistedCandidates = shortlistedCandidates.filter(c => c.id !== candidateId);
+          buttonElement.textContent = 'Shortlist';
+          buttonElement.style.backgroundColor = 'var(--background)';
+          buttonElement.style.color = 'var(--foreground)';
+          buttonElement.style.borderColor = 'var(--border)';
+          
+          // Show toast
+          showToast(`Removed ${candidate.name} from shortlist`, 'var(--warning)');
+        } else {
+          // Show job selection modal
+          showJobSelectionModal(candidate, buttonElement);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('shortlistedCandidates', JSON.stringify(shortlistedCandidates));
+        
+        // Update shortlisted count in dashboard
+        updateShortlistedCount();
+        
+        // Refresh shortlisted candidates section if it's visible
+        if (document.getElementById('section-shortlisted').style.display === 'block') {
+          renderShortlistedCandidates();
+        }
+      }
+      
+      // Function to show job selection modal
+      function showJobSelectionModal(candidate, buttonElement) {
+        // Create modal overlay
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.position = 'fixed';
+        modalOverlay.style.top = '0';
+        modalOverlay.style.left = '0';
+        modalOverlay.style.width = '100%';
+        modalOverlay.style.height = '100%';
+        modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modalOverlay.style.display = 'flex';
+        modalOverlay.style.justifyContent = 'center';
+        modalOverlay.style.alignItems = 'center';
+        modalOverlay.style.zIndex = '1000';
+        
+        // Create modal
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = 'var(--background)';
+        modal.style.borderRadius = '8px';
+        modal.style.padding = '24px';
+        modal.style.width = '500px';
+        modal.style.maxWidth = '90%';
+        modal.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        
+        // Create modal content
+        modal.innerHTML = `
+          <h3 style="margin: 0 0 16px 0; font-size: 18px;">Shortlist ${candidate.name}</h3>
+          <p style="margin: 0 0 16px 0; font-size: 14px;">Select the job posting you want to shortlist this candidate for:</p>
+          
+          <select id="job-selection" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px; font-size: 14px;">
+            ${currentRecruiter.jobPostings.map(job => `<option value="${job.title}">${job.title}</option>`).join('')}
+          </select>
+          
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button id="cancel-shortlist" style="padding: var(--button-padding); border-radius: 6px; border: 1px solid var(--border); background-color: var(--background); font-size: 14px; cursor: pointer;">Cancel</button>
+            <button id="confirm-shortlist" style="padding: var(--button-padding); border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Confirm</button>
+          </div>
+        `;
+        
+        // Add modal to overlay
+        modalOverlay.appendChild(modal);
+        
+        // Add overlay to body
+        document.body.appendChild(modalOverlay);
+        
+        // Add event listeners
+        document.getElementById('cancel-shortlist').addEventListener('click', function() {
+          document.body.removeChild(modalOverlay);
+        });
+        
+        document.getElementById('confirm-shortlist').addEventListener('click', function() {
+          const selectedJob = document.getElementById('job-selection').value;
+          
+          // Add to shortlist with selected job
+          shortlistedCandidates.push({
+            ...candidate,
+            shortlistedFor: selectedJob,
+            shortlistedAt: new Date().toISOString()
+          });
+          
+          // Update button
+          buttonElement.textContent = 'Shortlisted ✓';
+          buttonElement.style.backgroundColor = 'var(--success-light)';
+          buttonElement.style.color = 'var(--success)';
+          buttonElement.style.borderColor = 'var(--success)';
+          
+          // Save to localStorage
+          localStorage.setItem('shortlistedCandidates', JSON.stringify(shortlistedCandidates));
+          
+          // Update shortlisted count
+          updateShortlistedCount();
+          
+          // Show toast
+          showToast(`Added ${candidate.name} to shortlist for ${selectedJob}`, 'var(--success)');
+          
+          // Close modal
+          document.body.removeChild(modalOverlay);
+          
+          // Refresh shortlisted candidates section if it's visible
+          if (document.getElementById('section-shortlisted').style.display === 'block') {
+            renderShortlistedCandidates();
+          }
+        });
+      }
+      
+      // Function to show a toast message
+      function showToast(message, color) {
+        const toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.background = color;
+        toast.style.color = 'white';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '6px';
+        toast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        toast.style.zIndex = '1000';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '8px';
+        
+        toast.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          ${message}
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.5s';
+          setTimeout(() => {
+            document.body.removeChild(toast);
+          }, 500);
+        }, 3000);
+      }
+      
+      // Function to render shortlisted candidates
+      function renderShortlistedCandidates() {
+        const shortlistedContainer = document.querySelector('.shortlisted-candidates');
+        shortlistedContainer.innerHTML = '';
+        
+        // Get selected job filter
+        const jobFilter = document.getElementById('shortlisted-job-filter').value;
+        
+        // Filter candidates based on job selection
+        let filteredShortlist = [...shortlistedCandidates];
+        if (jobFilter !== 'all') {
+          filteredShortlist = filteredShortlist.filter(c => c.shortlistedFor === jobFilter);
+        }
+        
+        // Populate job filter options if not already done
+        const jobFilterSelect = document.getElementById('shortlisted-job-filter');
+        if (jobFilterSelect.options.length === 1) { // Only has "All Jobs" option
+          const uniqueJobs = [...new Set(shortlistedCandidates.map(c => c.shortlistedFor))];
+          uniqueJobs.forEach(job => {
+            const option = document.createElement('option');
+            option.value = job;
+            option.textContent = job;
+            jobFilterSelect.appendChild(option);
+          });
+        }
+        
+        if (filteredShortlist.length === 0) {
+          shortlistedContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--foreground-muted);">No candidates have been shortlisted for this job.</div>';
+          return;
+        }
+        
+        // Group by job
+        const candidatesByJob = {};
+        filteredShortlist.forEach(candidate => {
+          if (!candidatesByJob[candidate.shortlistedFor]) {
+            candidatesByJob[candidate.shortlistedFor] = [];
+          }
+          candidatesByJob[candidate.shortlistedFor].push(candidate);
+        });
+        
+        // Create sections for each job
+        Object.keys(candidatesByJob).forEach(job => {
+          // Add job section header if showing all jobs
+          if (jobFilter === 'all') {
+            const jobHeader = document.createElement('div');
+            jobHeader.style.marginTop = '24px';
+            jobHeader.style.marginBottom = '16px';
+            jobHeader.innerHTML = `<h4 style="font-size: 18px; margin: 0;">For ${job}</h4>`;
+            shortlistedContainer.appendChild(jobHeader);
+          }
+          
+          // Add candidates for this job
+          const jobCandidates = candidatesByJob[job];
+          const candidatesGrid = document.createElement('div');
+          candidatesGrid.style.display = 'grid';
+          candidatesGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(330px, 1fr))';
+          candidatesGrid.style.gap = '16px';
+          candidatesGrid.style.marginBottom = '24px';
+          
+          jobCandidates.forEach(candidate => {
+            const candidateCard = document.createElement('div');
+            candidateCard.className = 'candidate-card';
+            candidateCard.style.backgroundColor = 'var(--background)';
+            candidateCard.style.borderRadius = '8px';
+            candidateCard.style.border = '1px solid var(--border)';
+            candidateCard.style.padding = '16px';
+            
+            candidateCard.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 16px;">${candidate.name}</h3>
+                <div style="background-color: var(--primary-light); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">${candidate.match}% Match</div>
+              </div>
+              
+              <div style="margin-bottom: 8px;">
+                <div style="font-size: 14px; color: var(--foreground-muted); margin-bottom: 4px;">${candidate.position}</div>
+                <div style="font-size: 14px; color: var(--foreground-muted);">${candidate.experience} experience</div>
+              </div>
+              
+              <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px;">
+                ${candidate.skills.map(skill => 
+                  `<span style="background-color: var(--background-light); border-radius: 12px; padding: 4px 10px; font-size: 12px;">${skill}</span>`
+                ).join('')}
+              </div>
+              
+              <div style="margin-top: 8px; margin-bottom: 12px; font-size: 14px; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Shortlisted for: <strong>${candidate.shortlistedFor}</strong>
+              </div>
+              
+              <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button style="flex: 1; padding: var(--button-padding); border-radius: 6px; background-color: var(--primary); color: white; border: none; font-size: 14px; cursor: pointer;">Contact</button>
+                <button data-candidate-id="${candidate.id}" class="remove-shortlist-btn" style="flex: 1; padding: var(--button-padding); border-radius: 6px; border: 1px solid var(--danger); background-color: var(--danger-light); color: var(--danger); font-size: 14px; cursor: pointer;">
+                  Remove
+                </button>
+              </div>
+            `;
+            
+            candidatesGrid.appendChild(candidateCard);
+          });
+          
+          shortlistedContainer.appendChild(candidatesGrid);
+        });
+        
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.remove-shortlist-btn').forEach(button => {
+          button.addEventListener('click', function() {
+            const candidateId = this.getAttribute('data-candidate-id');
+            const candidate = shortlistedCandidates.find(c => c.id === candidateId);
+            
+            // Remove from shortlist
+            shortlistedCandidates = shortlistedCandidates.filter(c => c.id !== candidateId);
+            
+            // Save to localStorage
+            localStorage.setItem('shortlistedCandidates', JSON.stringify(shortlistedCandidates));
+            
+            // Update shortlisted count in dashboard
+            updateShortlistedCount();
+            
+            // Re-render shortlisted candidates
+            renderShortlistedCandidates();
+            
+            // Show toast
+            showToast(`Removed ${candidate.name} from shortlist`, 'var(--warning)');
+          });
+        });
+      }
+      
+      // Function to update shortlisted count in dashboard
+      function updateShortlistedCount() {
+        const shortlistedCountElement = document.getElementById('shortlisted-count');
+        if (shortlistedCountElement) {
+          shortlistedCountElement.textContent = shortlistedCandidates.length;
+        }
+      }
+
+      // Function to apply filters
+      function applyFilters() {
+        const positionFilter = document.getElementById('candidates-position-filter').value;
+        const experienceFilter = document.getElementById('candidates-experience-filter').value;
+        const scoreFilter = document.getElementById('candidates-score-filter').value;
+        const skillsFilter = document.getElementById('candidates-skills-filter').value;
+        
+        let filteredCandidates = [...candidates];
+        
+        // Apply position filter
+        if (positionFilter !== 'any') {
+          filteredCandidates = filteredCandidates.filter(candidate => 
+            candidate.position.toLowerCase().includes(positionFilter.toLowerCase())
+          );
+        }
+        
+        // Apply experience filter
+        if (experienceFilter !== 'any') {
+          if (experienceFilter === '1-3') {
+            filteredCandidates = filteredCandidates.filter(candidate => 
+              parseInt(candidate.experience) >= 1 && parseInt(candidate.experience) <= 3
+            );
+          } else if (experienceFilter === '3-5') {
+            filteredCandidates = filteredCandidates.filter(candidate => 
+              parseInt(candidate.experience) >= 3 && parseInt(candidate.experience) <= 5
+            );
+          } else if (experienceFilter === '5+') {
+            filteredCandidates = filteredCandidates.filter(candidate => 
+              parseInt(candidate.experience) >= 5
+            );
+          }
+        }
+        
+        // Apply score filter
+        if (scoreFilter !== 'any') {
+          const minScore = parseInt(scoreFilter);
+          filteredCandidates = filteredCandidates.filter(candidate => 
+            candidate.match >= minScore
+          );
+        }
+        
+        // Apply skills filter
+        if (skillsFilter !== 'any') {
+          filteredCandidates = filteredCandidates.filter(candidate => 
+            candidate.skills.some(skill => skill.toLowerCase() === skillsFilter.toLowerCase())
+          );
+        }
+        
+        renderCandidateCards(filteredCandidates);
+      }
+
+      // Function to apply AI filter
+      function applyAIFilter() {
+        const aiFilterInput = document.getElementById('candidates-ai-filter-input').value.trim().toLowerCase();
+        
+        if (!aiFilterInput) {
+          renderCandidateCards(candidates);
+          return;
+        }
+        
+        // Show loading indicator in the button
+        const aiFilterButton = document.getElementById('candidates-ai-filter-button');
+        const originalButtonContent = aiFilterButton.innerHTML;
+        aiFilterButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M12 3a9 9 0 1 0 9 9"></path></svg> Processing...`;
+        
+        // Add loading animation style if not already present
+        if (!document.getElementById('spin-animation')) {
+          const style = document.createElement('style');
+          style.id = 'spin-animation';
+          style.textContent = `
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        
+        setTimeout(() => {
+          let filteredCandidates = [...candidates];
+          
+          // Enhanced AI filtering logic with more sophisticated matching
+          
+          // Skills-based matching
+          const skillKeywords = [
+            { terms: ['javascript', 'js', 'frontend', 'web'], skills: ['JavaScript', 'React', 'Vue.js', 'CSS'] },
+            { terms: ['react', 'reactjs', 'frontend library'], skills: ['React', 'JavaScript'] },
+            { terms: ['vue', 'vuejs', 'vue.js'], skills: ['Vue.js', 'JavaScript'] },
+            { terms: ['python', 'django', 'flask'], skills: ['Python', 'Django'] },
+            { terms: ['backend', 'server', 'api'], skills: ['Python', 'Django', 'PostgreSQL', 'API Design'] },
+            { terms: ['cloud', 'aws', 'azure', 'gcp'], skills: ['AWS', 'Cloud'] },
+            { terms: ['devops', 'cicd', 'ci/cd', 'pipeline'], skills: ['Docker', 'Kubernetes', 'CI/CD'] },
+            { terms: ['database', 'sql', 'nosql', 'postgres'], skills: ['PostgreSQL', 'SQL'] },
+            { terms: ['mobile', 'app', 'ios', 'android'], skills: ['React Native', 'Mobile'] },
+            { terms: ['ui', 'ux', 'design', 'interface'], skills: ['CSS/SASS', 'UI/UX'] },
+            { terms: ['machine learning', 'ml', 'ai', 'artificial intelligence'], skills: ['TensorFlow', 'PyTorch', 'Python', 'Machine Learning'] },
+            { terms: ['data science', 'data scientist', 'statistics', 'statistical'], skills: ['Python', 'R', 'SQL', 'Statistical Analysis'] },
+            { terms: ['nlp', 'natural language', 'language processing', 'text analysis'], skills: ['NLP', 'BERT', 'Transformers'] },
+            { terms: ['computer vision', 'image', 'vision', 'opencv'], skills: ['Computer Vision', 'OpenCV', 'PyTorch'] },
+            { terms: ['deep learning', 'neural network', 'neural net', 'cnn', 'rnn'], skills: ['Deep Learning', 'TensorFlow', 'PyTorch'] },
+            { terms: ['data engineer', 'etl', 'data pipeline'], skills: ['Spark', 'Hadoop', 'ETL Pipelines'] }
+          ];
+          
+          // Experience level matching
+          const experienceKeywords = [
+            { terms: ['senior', 'experienced', 'expert', 'lead'], minYears: 5 },
+            { terms: ['mid', 'intermediate'], minYears: 3, maxYears: 5 },
+            { terms: ['junior', 'entry', 'beginner', 'new'], maxYears: 3 }
+          ];
+          
+          // Position matching
+          const positionKeywords = [
+            { terms: ['frontend', 'ui', 'web'], positions: ['Frontend Developer'] },
+            { terms: ['backend', 'server', 'api'], positions: ['Backend Engineer'] },
+            { terms: ['full-stack', 'fullstack', 'full stack'], positions: ['Senior Software Engineer'] },
+            { terms: ['devops', 'infrastructure', 'cloud'], positions: ['DevOps Engineer'] },
+            { terms: ['machine learning', 'ml engineer', 'ml developer'], positions: ['Machine Learning Engineer', 'Senior Machine Learning Engineer'] },
+            { terms: ['data science', 'data scientist', 'analytics'], positions: ['Data Scientist'] },
+            { terms: ['ai research', 'research scientist', 'ai researcher'], positions: ['AI Research Scientist'] },
+            { terms: ['nlp', 'natural language'], positions: ['Natural Language Processing Engineer'] },
+            { terms: ['computer vision', 'vision engineer'], positions: ['Computer Vision Engineer'] },
+            { terms: ['data engineer', 'data infrastructure'], positions: ['Senior Data Engineer'] }
+          ];
+          
+          // Match quality
+          const matchKeywords = [
+            { terms: ['top', 'best', 'highest', 'excellent', 'great'], minMatch: 90 },
+            { terms: ['good', 'strong', 'better'], minMatch: 80 },
+            { terms: ['decent', 'average', 'ok'], minMatch: 70 }
+          ];
+          
+          // Process natural language query
+          let hasMatchedAny = false;
+          
+          // Check for skills
+          for (const keywordSet of skillKeywords) {
+            if (keywordSet.terms.some(term => aiFilterInput.includes(term))) {
+              filteredCandidates = filteredCandidates.filter(candidate => 
+                candidate.skills.some(skill => 
+                  keywordSet.skills.some(targetSkill => 
+                    skill.toLowerCase().includes(targetSkill.toLowerCase())
+                  )
+                )
+              );
+              hasMatchedAny = true;
+              break;
+            }
+          }
+          
+          // Check for experience level
+          for (const expLevel of experienceKeywords) {
+            if (expLevel.terms.some(term => aiFilterInput.includes(term))) {
+              filteredCandidates = filteredCandidates.filter(candidate => {
+                const years = parseInt(candidate.experience);
+                if (expLevel.minYears && expLevel.maxYears) {
+                  return years >= expLevel.minYears && years <= expLevel.maxYears;
+                } else if (expLevel.minYears) {
+                  return years >= expLevel.minYears;
+                } else if (expLevel.maxYears) {
+                  return years <= expLevel.maxYears;
+                }
+                return true;
+              });
+              hasMatchedAny = true;
+              break;
+            }
+          }
+          
+          // Check for position
+          for (const posKeywords of positionKeywords) {
+            if (posKeywords.terms.some(term => aiFilterInput.includes(term))) {
+              filteredCandidates = filteredCandidates.filter(candidate => 
+                posKeywords.positions.some(pos => 
+                  candidate.position.toLowerCase().includes(pos.toLowerCase())
+                )
+              );
+              hasMatchedAny = true;
+              break;
+            }
+          }
+          
+          // Check for match quality
+          for (const matchLevel of matchKeywords) {
+            if (matchLevel.terms.some(term => aiFilterInput.includes(term))) {
+              filteredCandidates = filteredCandidates.filter(candidate => 
+                candidate.match >= matchLevel.minMatch
+              );
+              hasMatchedAny = true;
+              break;
+            }
+          }
+          
+          // If no specific category was matched, do a general search across all fields
+          if (!hasMatchedAny) {
+            filteredCandidates = filteredCandidates.filter(candidate => {
+              const searchableText = `
+                ${candidate.name.toLowerCase()} 
+                ${candidate.position.toLowerCase()} 
+                ${candidate.experience.toLowerCase()} 
+                ${candidate.skills.join(' ').toLowerCase()} 
+                ${candidate.description.toLowerCase()}
+              `;
+              
+              const searchTerms = aiFilterInput.split(/\s+/);
+              return searchTerms.every(term => searchableText.includes(term));
+            });
+          }
+          
+          // Restore button content
+          aiFilterButton.innerHTML = originalButtonContent;
+          
+          // Add a little indicator to show filter is active
+          const filterArea = document.querySelector('.job-filter');
+          const activeFilterIndicator = document.createElement('div');
+          activeFilterIndicator.className = 'active-filter-indicator';
+          activeFilterIndicator.style.padding = '4px 8px';
+          activeFilterIndicator.style.backgroundColor = 'var(--primary-light)';
+          activeFilterIndicator.style.color = 'var(--primary)';
+          activeFilterIndicator.style.borderRadius = '4px';
+          activeFilterIndicator.style.fontSize = '12px';
+          activeFilterIndicator.style.marginTop = '8px';
+          activeFilterIndicator.style.display = 'inline-block';
+          activeFilterIndicator.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> AI Filter Applied: "${aiFilterInput}"`;
+          
+          // Remove any existing indicators
+          const existingIndicator = document.querySelector('.active-filter-indicator');
+          if (existingIndicator) {
+            existingIndicator.remove();
+          }
+          
+          // Add indicator if filtering was successful
+          if (filteredCandidates.length > 0) {
+            filterArea.appendChild(activeFilterIndicator);
+          }
+          
+          renderCandidateCards(filteredCandidates);
+        }, 800); // Simulate AI processing time for better UX
+      }
+
+      // Job listing creation functionality
+      const createJobButton = document.getElementById('create-job-button');
+      const createJobModal = document.getElementById('create-job-modal');
+      const closeModalButton = document.getElementById('close-modal');
+      const cancelJobButton = document.getElementById('cancel-job');
+      const jobListingForm = document.getElementById('job-listing-form');
+      
+      // Show modal
+      createJobButton.addEventListener('click', function() {
+        createJobModal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+      });
+      
+      // Hide modal functions
+      function hideModal() {
+        createJobModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+        jobListingForm.reset(); // Clear form
+      }
+      
+      closeModalButton.addEventListener('click', hideModal);
+      cancelJobButton.addEventListener('click', hideModal);
+      
+      // Close modal if clicked outside the form
+      createJobModal.addEventListener('click', function(e) {
+        if (e.target === createJobModal) {
+          hideModal();
+        }
+      });
+      
+      // Handle form submission
+      jobListingForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const jobTitle = document.getElementById('job-title').value;
+        const jobDepartment = document.getElementById('job-department').value;
+        const jobType = document.getElementById('job-type').value;
+        const jobLocation = document.getElementById('job-location').value;
+        const jobSkills = document.getElementById('job-skills').value.split(',').map(skill => skill.trim());
+        const jobDescription = document.getElementById('job-description').value;
+        
+        // Create new job object
+        const newJob = {
+          id: 'jp' + (currentRecruiter.jobPostings.length + 1),
+          title: jobTitle,
+          department: jobDepartment,
+          location: jobLocation,
+          type: jobType,
+          applicants: 0,
+          qualified: 0,
+          interviewed: 0,
+          skills: jobSkills,
+          description: jobDescription
+        };
+        
+        // Add to job postings
+        currentRecruiter.jobPostings.push(newJob);
+        
+        // Save to localStorage
+        localStorage.setItem('currentRecruiter', JSON.stringify(currentRecruiter));
+        
+        // Re-render job postings
+        renderJobPostings();
+        
+        // Show success message
+        const successToast = document.createElement('div');
+        successToast.style.position = 'fixed';
+        successToast.style.bottom = '20px';
+        successToast.style.right = '20px';
+        successToast.style.background = 'var(--success)';
+        successToast.style.color = 'white';
+        successToast.style.padding = '12px 20px';
+        successToast.style.borderRadius = '6px';
+        successToast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        successToast.style.zIndex = '1000';
+        successToast.style.display = 'flex';
+        successToast.style.alignItems = 'center';
+        successToast.style.gap = '8px';
+        
+        successToast.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Job listing created successfully!
+        `;
+        
+        document.body.appendChild(successToast);
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          successToast.style.opacity = '0';
+          successToast.style.transition = 'opacity 0.5s';
+          setTimeout(() => {
+            document.body.removeChild(successToast);
+          }, 500);
+        }, 3000);
+        
+        // Hide modal
+        hideModal();
       });
     });
+
+    // Function to switch between sections
+    function showSection(sectionId) {
+      // Hide all sections
+      document.getElementById('section-dashboard').style.display = 'none';
+      document.getElementById('section-candidates').style.display = 'none';
+      document.getElementById('section-shortlisted').style.display = 'none';
+      document.getElementById('section-jobs').style.display = 'none';
+      document.getElementById('section-ai-assistant').style.display = 'none';
+      
+      // Show selected section
+      document.getElementById(`section-${sectionId}`).style.display = 'block';
+      
+      // Update active nav
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.getElementById(`nav-${sectionId}`).classList.add('active');
+    }
   </script>
 </body>
 </html> 

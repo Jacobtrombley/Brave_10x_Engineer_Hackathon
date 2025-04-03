@@ -1,0 +1,46 @@
+{
+  "name": "ML Models Rules",
+  "description": "Configuration rules for AI behavior when working with ML models and algorithms",
+  "include": ["models/**/*.py"],
+  "rules": [
+    {
+      "description": "Retrieval model guidelines",
+      "pattern": "models/retrieval/**/*.py",
+      "ai": {
+        "allow": ["suggest", "edit", "refactor"],
+        "guidelines": [
+          "Prioritize search efficiency and scalability",
+          "Consider memory constraints for large datasets",
+          "Add clear documentation for vector operations",
+          "Ensure proper error handling for edge cases"
+        ]
+      }
+    },
+    {
+      "description": "Ranking model guidelines",
+      "pattern": "models/ranking/**/*.py",
+      "ai": {
+        "allow": ["suggest", "edit", "refactor"],
+        "guidelines": [
+          "Focus on model interpretability",
+          "Document feature importance clearly",
+          "Maintain separation between training and inference code",
+          "Include comments explaining machine learning concepts"
+        ]
+      }
+    },
+    {
+      "description": "Model evaluation guidelines",
+      "pattern": "evaluation/**/*.py",
+      "ai": {
+        "allow": ["suggest", "edit", "complete"],
+        "guidelines": [
+          "Use standard metrics (NDCG, precision, recall)",
+          "Include visualizations where helpful",
+          "Add explanations for metric interpretations",
+          "Ensure reproducibility of evaluation results"
+        ]
+      }
+    }
+  ]
+} 
